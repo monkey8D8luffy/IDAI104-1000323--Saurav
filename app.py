@@ -146,16 +146,13 @@ with tab1:
     col_c, col_d = st.columns(2)
     
     # 3. Line Chart: Mission Duration vs Distance (Seaborn/Matplotlib)
-    with col_c:
+        with col_c:
         st.markdown("### Mission Duration vs Distance from Earth")
-        fig3, ax3 = plt.subplots(figsize=(6, 4))
-        plt_sns.lineplot(data=filtered_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', ax=ax3, color="#636EFA")
-        ax3.set_facecolor('#0d1117')
-        fig3.patch.set_facecolor('#0d1117')
-        ax3.xaxis.label.set_color('white')
-        ax3.yaxis.label.set_color('white')
-        ax3.tick_params(colors='white')
-        st.pyplot(fig3)
+        fig3 = px.line(filtered_data, x='Distance from Earth (light-years)', y='Mission Duration (years)')
+        fig3.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
+        fig3.update_traces(line_color='#636EFA', line_width=2)
+        st.plotly_chart(fig3, use_container_width=True)
+
 
     # 4. Box Plot: Crew Size vs Mission Success % (Seaborn)
     with col_d:
