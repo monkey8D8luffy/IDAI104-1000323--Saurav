@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as plt_sns
 import plotly.express as px
-import plotly.graph_objects as go
 from streamlit_lottie import st_lottie
 import requests
 import time
@@ -39,10 +36,13 @@ st.markdown("""
 
 # Lottie Animation Function (Rocket Loading)
 def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except:
         return None
-    return r.json()
 
 lottie_rocket = load_lottieurl("https://assets9.lottiefiles.com/packages/lf20_jzzvxt.json")
 
@@ -145,31 +145,28 @@ with tab1:
 
     col_c, col_d = st.columns(2)
     
-    # 3. Line Chart: Mission Duration vs Distance (Seaborn/Matplotlib)
-        with col_c:
+    # 3. Line Chart: Mission Duration vs Distance (Now Plotly!)
+    with col_c:
         st.markdown("### Mission Duration vs Distance from Earth")
-        fig3 = px.line(filtered_data, x='Distance from Earth (light-years)', y='Mission Duration (years)')
+        # Sorting is important for line charts so the line flows correctly
+        line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
+        fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True)
         fig3.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
         fig3.update_traces(line_color='#636EFA', line_width=2)
         st.plotly_chart(fig3, use_container_width=True)
 
-
-    # 4. Box Plot: Crew Size vs Mission Success % (Seaborn)
+    # 4. Box Plot: Crew Size vs Mission Success % (Now Plotly!)
     with col_d:
         st.markdown("### Crew Size Distribution per Outcome")
-        fig4, ax4 = plt.subplots(figsize=(6, 4))
-        plt_sns.boxplot(data=filtered_data, x='Outcome Status', y='Crew Size', palette={"Success": "#00CC96", "Failure": "#EF553B"}, ax=ax4)
-        ax4.set_facecolor('#0d1117')
-        fig4.patch.set_facecolor('#0d1117')
-        ax4.xaxis.label.set_color('white')
-        ax4.yaxis.label.set_color('white')
-        ax4.tick_params(colors='white')
-        st.pyplot(fig4)
+        fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', 
+                      color='Outcome Status', color_discrete_map={"Success": "#00CC96", "Failure": "#EF553B"})
+        fig4.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
+        st.plotly_chart(fig4, use_container_width=True)
 
     # 5. Scatter Plot: Scientific Yield vs Mission Cost
     st.markdown("### Scientific Yield vs Mission Cost")
     fig5 = px.scatter(filtered_data, x='Mission Cost (billion USD)', y='Scientific Yield (points)',
-                      color='Mission Type', trendline="ols")
+                      color='Mission Type', hover_data=['Target Name'])
     fig5.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
     st.plotly_chart(fig5, use_container_width=True)
 
