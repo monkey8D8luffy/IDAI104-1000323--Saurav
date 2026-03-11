@@ -19,6 +19,7 @@ st.markdown("""
     .stTabs [data-baseweb="tab-list"] { gap: 15px; background: transparent; }
     .stTabs [data-baseweb="tab"] { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 12px 30px; transition: 0.3s ease; }
     .stTabs [data-baseweb="tab"][aria-selected="true"] { background: rgba(88, 166, 255, 0.15); border-color: #58a6ff; }
+    hr { border-color: rgba(255, 255, 255, 0.1); margin-top: 40px; margin-bottom: 40px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -90,16 +91,56 @@ dark_template = dict(
 )
 
 # ==========================================
-# 4. TABS: ADVANCED ANALYTICS vs SIMULATION
+# 4. TABS: ANALYTICS vs SIMULATION
 # ==========================================
-tab1, tab2 = st.tabs(["🔬 Deep Orbital Analytics", "🚀 Telemetry & Flight Simulation"])
+tab1, tab2 = st.tabs(["📊 Mission Dashboard", "🚀 Telemetry & Flight Simulation"])
 
 with tab1:
     st.markdown(f"<div class='glass-card'><h4>Dataset Array: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
     
-    # 1. 3D PARAMETER SPACE MAP (High Detail)
+    # --- PART A: EXECUTIVE SUMMARY (Easy Charts) ---
+    st.markdown("<h2 style='color: #4db8ff;'>Executive Summary: Key Mission Metrics</h2>", unsafe_allow_html=True)
+    
+    col_a1, col_a2 = st.columns(2)
+    with col_a1:
+        fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)',
+                          color='Outcome Status', size='Mission Cost (billion USD)',
+                          hover_data=['Mission Name', 'Launch Vehicle'], title="Payload vs Fuel Consumption",
+                          color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
+        fig1.update_layout(template=dark_template)
+        st.plotly_chart(fig1, use_container_width=True)
+
+    with col_a2:
+        cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
+        fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', 
+                      color='Outcome Status', title="Total Mission Cost by Outcome",
+                      color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
+        fig2.update_layout(template=dark_template)
+        st.plotly_chart(fig2, use_container_width=True)
+
+    col_a3, col_a4 = st.columns(2)
+    with col_a3:
+        line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
+        fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', 
+                       markers=True, title="Mission Duration vs Distance")
+        fig3.update_layout(template=dark_template)
+        fig3.update_traces(line_color='#29b6f6', line_width=2)
+        st.plotly_chart(fig3, use_container_width=True)
+
+    with col_a4:
+        fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', 
+                      color='Outcome Status', title="Crew Size Distribution",
+                      color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
+        fig4.update_layout(template=dark_template)
+        st.plotly_chart(fig4, use_container_width=True)
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    # --- PART B: DEEP ORBITAL ANALYTICS (NASA-Grade Charts) ---
+    st.markdown("<h2 style='color: #4db8ff;'>Deep Orbital Analytics: Advanced Telemetry</h2>", unsafe_allow_html=True)
+
+    # 1. 3D PARAMETER SPACE MAP
     st.markdown("### 🌐 3D Mission Parameter Space")
-    st.markdown("Analyze the multidimensional relationship between deep-space distance, required fuel, and payload limits.")
     fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)',
                            color='Mission Success (%)', size='Mission Cost (billion USD)', 
                            hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'],
@@ -111,10 +152,10 @@ with tab1:
     ))
     st.plotly_chart(fig_3d, use_container_width=True)
 
-    col_a, col_b = st.columns(2)
+    col_b1, col_b2 = st.columns(2)
     
     # 2. PEARSON CORRELATION MATRIX
-    with col_a:
+    with col_b1:
         st.markdown("### 📊 Metric Correlation Matrix")
         num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 
                                 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 
@@ -125,7 +166,7 @@ with tab1:
         st.plotly_chart(fig_corr, use_container_width=True)
 
     # 3. HIERARCHICAL SUNBURST CHART
-    with col_b:
+    with col_b2:
         st.markdown("### 🪐 Mission Taxonomy Architecture")
         fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], 
                               values='Mission Cost (billion USD)', color='Mission Success (%)', 
@@ -133,14 +174,14 @@ with tab1:
         fig_sun.update_layout(template=dark_template, height=500, margin=dict(t=0, l=0, r=0, b=0))
         st.plotly_chart(fig_sun, use_container_width=True)
 
-    # 4. VIOLIN & SWARM PLOT FOR STATISTICAL DISTRIBUTION
+    # 4. VIOLIN DISTRIBUTION
     st.markdown("### 📈 Scientific Yield Distribution Analysis")
     fig_violin = px.violin(filtered_data, x='Mission Type', y='Scientific Yield (points)', color='Mission Type', 
                            box=True, points="all", hover_data=['Mission Name', 'Launch Vehicle'])
     fig_violin.update_layout(template=dark_template, height=500, showlegend=False)
     st.plotly_chart(fig_violin, use_container_width=True)
 
-    # 5. MARGINAL SCATTER PLOT (Efficiency Matrix)
+    # 5. MARGINAL SCATTER PLOT
     st.markdown("### 🎯 Resource Efficiency & Outcome Marginal Distributions")
     fig_marg = px.scatter(filtered_data, x='Mission Cost (billion USD)', y='Scientific Yield (points)', 
                           color='Outcome Status', marginal_x="histogram", marginal_y="rug", 
