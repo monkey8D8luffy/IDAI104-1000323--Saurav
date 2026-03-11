@@ -13,7 +13,7 @@ st.set_page_config(page_title="🚀 Advanced Aerospace Analytics", layout="wide"
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #0b1320, #14213d, #000000); background-attachment: fixed; }
-    h1, h2, h3, h4, p, span, div { color: #e2e8f0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+    h1, h2, h3, h4, p, span, div, label { color: #e2e8f0; font-family: 'Inter', 'Segoe UI', sans-serif; }
     [data-testid="stSidebar"] { background: rgba(11, 19, 32, 0.6) !important; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-right: 1px solid rgba(255, 255, 255, 0.05); }
     .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); }
     .stTabs [data-baseweb="tab-list"] { gap: 15px; background: transparent; }
@@ -61,23 +61,6 @@ VEHICLE_STATS = {
     "Ariane 6": {"mass_kg": 800000, "thrust_N": 10000000, "drag": 0.45}
 }
 
-# ==========================================
-# 3. SIDEBAR CONTROLS
-# ==========================================
-st.sidebar.markdown("<h3 style='color: #4db8ff;'>⎈ Telemetry Filters</h3>", unsafe_allow_html=True)
-selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=["All"] + list(data['Mission Type'].unique()))
-selected_vehicle = st.sidebar.selectbox("Launch Platform", options=["All"] + list(data['Launch Vehicle'].unique()))
-
-min_year, max_year = int(data['Launch Year'].min()), int(data['Launch Year'].max())
-selected_year_range = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
-
-filtered_data = data.copy()
-if selected_mission_type != "All":
-    filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
-if selected_vehicle != "All":
-    filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
-filtered_data = filtered_data[(filtered_data['Launch Year'] >= selected_year_range[0]) & (filtered_data['Launch Year'] <= selected_year_range[1])]
-
 # Base Plotly Template for Dark Theme
 dark_template = dict(
     layout=go.Layout(
@@ -91,113 +74,91 @@ dark_template = dict(
 )
 
 # ==========================================
-# 4. TABS: ANALYTICS vs SIMULATION
+# 3. TABS
 # ==========================================
-tab1, tab2 = st.tabs(["📊 Mission Dashboard", "🚀 Telemetry & Flight Simulation"])
+tab1, tab2 = st.tabs(["📊 Mission Dashboard", "🚀 3D Telemetry & Flight Simulation"])
 
 with tab1:
+    st.sidebar.markdown("<h3 style='color: #4db8ff;'>⎈ Telemetry Filters</h3>", unsafe_allow_html=True)
+    selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=["All"] + list(data['Mission Type'].unique()))
+    selected_vehicle = st.sidebar.selectbox("Launch Platform", options=["All"] + list(data['Launch Vehicle'].unique()))
+
+    min_year, max_year = int(data['Launch Year'].min()), int(data['Launch Year'].max())
+    selected_year_range = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
+
+    filtered_data = data.copy()
+    if selected_mission_type != "All":
+        filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
+    if selected_vehicle != "All":
+        filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
+    filtered_data = filtered_data[(filtered_data['Launch Year'] >= selected_year_range[0]) & (filtered_data['Launch Year'] <= selected_year_range[1])]
+
     st.markdown(f"<div class='glass-card'><h4>Dataset Array: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
     
-    # --- PART A: EXECUTIVE SUMMARY (Easy Charts) ---
+    # --- PART A: EXECUTIVE SUMMARY ---
     st.markdown("<h2 style='color: #4db8ff;'>Executive Summary: Key Mission Metrics</h2>", unsafe_allow_html=True)
-    
     col_a1, col_a2 = st.columns(2)
     with col_a1:
-        fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)',
-                          color='Outcome Status', size='Mission Cost (billion USD)',
-                          hover_data=['Mission Name', 'Launch Vehicle'], title="Payload vs Fuel Consumption",
-                          color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
+        fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Payload vs Fuel Consumption", color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
         fig1.update_layout(template=dark_template)
         st.plotly_chart(fig1, use_container_width=True)
 
     with col_a2:
         cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
-        fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', 
-                      color='Outcome Status', title="Total Mission Cost by Outcome",
-                      color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
+        fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Total Mission Cost by Outcome", color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
         fig2.update_layout(template=dark_template)
         st.plotly_chart(fig2, use_container_width=True)
 
     col_a3, col_a4 = st.columns(2)
     with col_a3:
         line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
-        fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', 
-                       markers=True, title="Mission Duration vs Distance")
+        fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True, title="Mission Duration vs Distance")
         fig3.update_layout(template=dark_template)
         fig3.update_traces(line_color='#29b6f6', line_width=2)
         st.plotly_chart(fig3, use_container_width=True)
 
     with col_a4:
-        fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', 
-                      color='Outcome Status', title="Crew Size Distribution",
-                      color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
+        fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', color='Outcome Status', title="Crew Size Distribution", color_discrete_map={"Nominal (Success)": "#00e676", "Anomaly (Failure)": "#ff1744"})
         fig4.update_layout(template=dark_template)
         st.plotly_chart(fig4, use_container_width=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # --- PART B: DEEP ORBITAL ANALYTICS (NASA-Grade Charts) ---
+    # --- PART B: DEEP ORBITAL ANALYTICS ---
     st.markdown("<h2 style='color: #4db8ff;'>Deep Orbital Analytics: Advanced Telemetry</h2>", unsafe_allow_html=True)
-
-    # 1. 3D PARAMETER SPACE MAP
-    st.markdown("### 🌐 3D Mission Parameter Space")
-    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)',
-                           color='Mission Success (%)', size='Mission Cost (billion USD)', 
-                           hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'],
-                           color_continuous_scale=px.colors.sequential.Plasma, opacity=0.8)
-    fig_3d.update_layout(template=dark_template, height=600, scene=dict(
-        xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
-        yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
-        zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)")
-    ))
+    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], color_continuous_scale=px.colors.sequential.Plasma, opacity=0.8)
+    fig_3d.update_layout(template=dark_template, height=600, scene=dict(xaxis=dict(backgroundcolor="rgba(0,0,0,0)"), yaxis=dict(backgroundcolor="rgba(0,0,0,0)"), zaxis=dict(backgroundcolor="rgba(0,0,0,0)")))
     st.plotly_chart(fig_3d, use_container_width=True)
 
     col_b1, col_b2 = st.columns(2)
-    
-    # 2. PEARSON CORRELATION MATRIX
     with col_b1:
-        st.markdown("### 📊 Metric Correlation Matrix")
-        num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 
-                                'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 
-                                'Distance from Earth (light-years)']]
-        corr_matrix = num_df.corr()
-        fig_corr = px.imshow(corr_matrix, text_auto=".2f", aspect="auto", color_continuous_scale='RdBu_r', origin='lower')
+        num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 'Distance from Earth (light-years)']]
+        fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='RdBu_r', origin='lower', title="Metric Correlation Matrix")
         fig_corr.update_layout(template=dark_template, height=500)
         st.plotly_chart(fig_corr, use_container_width=True)
 
-    # 3. HIERARCHICAL SUNBURST CHART
     with col_b2:
-        st.markdown("### 🪐 Mission Taxonomy Architecture")
-        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], 
-                              values='Mission Cost (billion USD)', color='Mission Success (%)', 
-                              color_continuous_scale='viridis')
-        fig_sun.update_layout(template=dark_template, height=500, margin=dict(t=0, l=0, r=0, b=0))
+        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='viridis', title="Mission Taxonomy Architecture")
+        fig_sun.update_layout(template=dark_template, height=500, margin=dict(t=30, l=0, r=0, b=0))
         st.plotly_chart(fig_sun, use_container_width=True)
 
-    # 4. VIOLIN DISTRIBUTION
-    st.markdown("### 📈 Scientific Yield Distribution Analysis")
-    fig_violin = px.violin(filtered_data, x='Mission Type', y='Scientific Yield (points)', color='Mission Type', 
-                           box=True, points="all", hover_data=['Mission Name', 'Launch Vehicle'])
+    fig_violin = px.violin(filtered_data, x='Mission Type', y='Scientific Yield (points)', color='Mission Type', box=True, points="all", hover_data=['Mission Name', 'Launch Vehicle'], title="Scientific Yield Distribution Analysis")
     fig_violin.update_layout(template=dark_template, height=500, showlegend=False)
     st.plotly_chart(fig_violin, use_container_width=True)
 
-    # 5. MARGINAL SCATTER PLOT
-    st.markdown("### 🎯 Resource Efficiency & Outcome Marginal Distributions")
-    fig_marg = px.scatter(filtered_data, x='Mission Cost (billion USD)', y='Scientific Yield (points)', 
-                          color='Outcome Status', marginal_x="histogram", marginal_y="rug", 
-                          hover_name='Mission Name', size='Crew Size',
-                          color_discrete_map={"Nominal (Success)": "#00ff88", "Anomaly (Failure)": "#ff3366"})
-    fig_marg.update_layout(template=dark_template, height=600)
-    st.plotly_chart(fig_marg, use_container_width=True)
-
 with tab2:
-    st.markdown("<div class='glass-card'><h3>⚙️ Dynamic 2D Flight Simulation Engine</h3><p>Select a specific mission trajectory. The physics engine interprets Payload, Fuel, and Vehicle telemetry to simulate aerodynamic flight profiles.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div class='glass-card'><h3>⚙️ Dynamic 3D Flight Simulation Engine</h3><p>Choose between utilizing real dataset telemetry or engaging the Manual Override to build your own aerodynamic profile.</p></div>", unsafe_allow_html=True)
     
-    mission_names = filtered_data['Mission Name'].tolist()
-    selected_mission = st.selectbox("Select Mission Telemetry Profile:", mission_names)
+    # Toggle for Manual vs Dataset
+    mode = st.radio("⚙️ Simulation Mode:", ["Dataset Telemetry Profiles", "Manual Engineering Override"], horizontal=True)
     
-    if selected_mission:
-        m_data = filtered_data[filtered_data['Mission Name'] == selected_mission].iloc[0]
+    st.markdown("<hr style='margin-top: 10px; margin-bottom: 20px;'>", unsafe_allow_html=True)
+
+    if mode == "Dataset Telemetry Profiles":
+        mission_names = data['Mission Name'].tolist()
+        selected_mission = st.selectbox("Select Mission Telemetry Profile:", mission_names)
+        
+        m_data = data[data['Mission Name'] == selected_mission].iloc[0]
         vehicle = m_data['Launch Vehicle']
         v_stats = VEHICLE_STATS.get(vehicle, {"mass_kg": 1000000, "thrust_N": 30000000, "drag": 0.4})
         
@@ -212,79 +173,142 @@ with tab2:
         col1.metric("Platform", vehicle)
         col2.metric("Payload (kg)", f"{payload_kg:,.0f}")
         col3.metric("Propellant (kg)", f"{fuel_kg:,.0f}")
-        col4.metric("Success Prob.", f"{success_chance}%")
+        col4.metric("Historical Success", f"{success_chance}%")
+        
+    else:
+        st.markdown("#### 🔧 Custom Vehicle Configuration")
+        col1, col2 = st.columns(2)
+        init_mass = col1.number_input("Dry Rocket Mass (kg)", value=1000000, step=50000)
+        thrust = col2.number_input("Engine Thrust (N)", value=35000000, step=1000000)
+        
+        col3, col4 = st.columns(2)
+        payload_kg = col3.number_input("Payload Weight (kg)", value=25000, step=1000)
+        fuel_kg = col4.number_input("Propellant Mass (kg)", value=2000000, step=100000)
+        
+        col5, col6 = st.columns(2)
+        drag_coeff = col5.slider("Aerodynamic Drag Factor", 0.1, 1.0, 0.4)
+        success_chance = col6.slider("System Reliability Prob. (%)", 10, 100, 90)
 
-        if st.button("🚀 INITIATE IGNITION SEQUENCE", use_container_width=True):
-            dt = 0.5
-            time_steps = 300
-            burn_rate = fuel_kg / 100 
-            gravity = 9.81
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if st.button("🚀 INITIATE 3D IGNITION SEQUENCE", use_container_width=True):
+        # 3D Physics Engine Setup
+        dt = 0.5
+        time_steps = 400
+        burn_rate = fuel_kg / 120  # Approx 120s burn
+        gravity = 9.81
+        
+        # Determine failure timing
+        will_fail = success_chance < np.random.uniform(0, 100)
+        failure_time = np.random.randint(30, 90) if will_fail else 999
+        
+        time_list, x_list, y_list, z_list, status_list = [], [], [], [], []
+        current_mass = init_mass + fuel_kg + payload_kg
+        
+        # Initial 3D Variables
+        x, y, z = 0.0, 0.0, 0.0
+        vx, vy, vz = 0.0, 0.0, 0.0
+        status = "Nominal"
+        
+        # Angles for Gravity Turn
+        pitch_angle = np.pi / 2 # 90 degrees (straight up)
+        azimuth_angle = np.pi / 4 # 45 degree inclination for 3D depth
+        
+        progress_bar = st.progress(0)
+        
+        for t_step in range(time_steps):
+            t = t_step * dt
             
-            will_fail = success_chance < np.random.uniform(50, 100)
-            failure_time = np.random.randint(40, 90) if will_fail else 999
+            # Anomaly Trigger
+            if t >= failure_time and will_fail and status == "Nominal":
+                status = "ANOMALY - THRUST LOSS"
+                thrust = 0 
             
-            time_list, alt_list, status_list = [], [], []
-            current_mass = init_mass + fuel_kg + payload_kg
-            velocity = 0.0
-            altitude = 0.0
-            status = "Nominal"
+            # Gravity Turn Pitch Control
+            if t > 10 and status == "Nominal":
+                pitch_angle = max(0.1, pitch_angle - 0.005 * dt) # Gradually tilt horizontal
             
-            progress_bar = st.progress(0)
-            
-            for t_step in range(time_steps):
-                t = t_step * dt
-                if t >= failure_time and will_fail and status == "Nominal":
-                    status = "ANOMALY - THRUST LOSS"
-                    thrust = 0 
-                
-                if fuel_kg > 0 and status == "Nominal":
-                    current_thrust = thrust
-                    fuel_spent = min(burn_rate * dt, fuel_kg)
-                    fuel_kg -= fuel_spent
-                    current_mass -= fuel_spent
-                else:
-                    current_thrust = 0
-                
-                air_density = max(0, 1.225 * np.exp(-altitude / 8000))
-                drag_force = 0.5 * drag_coeff * air_density * (velocity ** 2) * np.sign(velocity)
-                gravity_force = current_mass * gravity
-                
-                net_force = current_thrust - gravity_force - drag_force
-                acceleration = net_force / current_mass
-                
-                velocity += acceleration * dt
-                altitude += velocity * dt
-                
-                if altitude <= 0 and t > 5:
-                    altitude = 0
-                    velocity = 0
-                    if status != "Nominal":
-                        status = "CATASTROPHIC IMPACT"
-                    break
-                    
-                time_list.append(t)
-                alt_list.append(altitude / 1000) 
-                status_list.append(status)
-                
-            progress_bar.empty()
-            
-            if will_fail:
-                st.error(f"💥 {status_list[-1]} at T+{failure_time}s")
+            # Fuel Burn
+            if fuel_kg > 0 and status == "Nominal":
+                current_thrust = thrust
+                fuel_spent = min(burn_rate * dt, fuel_kg)
+                fuel_kg -= fuel_spent
+                current_mass -= fuel_spent
             else:
-                st.success("✨ ORBITAL INSERTION CONFIRMED")
+                current_thrust = 0
             
-            sim_df = pd.DataFrame({"Time (s)": time_list, "Altitude (km)": alt_list, "Status": status_list})
-            sim_df = sim_df.iloc[::2, :].copy() 
+            # Forces
+            air_density = max(0, 1.225 * np.exp(-z / 8000))
+            v_mag = np.sqrt(vx**2 + vy**2 + vz**2)
+            drag_force = 0.5 * drag_coeff * air_density * (v_mag ** 2)
             
-            fig_anim = px.scatter(sim_df, x="Time (s)", y="Altitude (km)", animation_frame="Time (s)", 
-                                  range_x=[0, sim_df['Time (s)'].max() + 10], range_y=[0, sim_df['Altitude (km)'].max() * 1.2])
+            dx = drag_force * (vx / v_mag) if v_mag > 0 else 0
+            dy = drag_force * (vy / v_mag) if v_mag > 0 else 0
+            dz = drag_force * (vz / v_mag) if v_mag > 0 else 0
             
-            fig_anim.update_traces(marker=dict(size=20, symbol="triangle-up", 
-                                   color=np.where(sim_df['Status'] == "Nominal", "#00ff88", "#ff3366"),
-                                   line=dict(width=2, color="white")))
+            tx = current_thrust * np.cos(pitch_angle) * np.cos(azimuth_angle)
+            ty = current_thrust * np.cos(pitch_angle) * np.sin(azimuth_angle)
+            tz = current_thrust * np.sin(pitch_angle)
             
-            fig_anim.add_trace(go.Scatter(x=sim_df["Time (s)"], y=sim_df["Altitude (km)"],
-                                          mode="lines", line=dict(color="rgba(255, 255, 255, 0.2)", width=2), name="Flight Path"))
+            ax = (tx - dx) / current_mass
+            ay = (ty - dy) / current_mass
+            az = (tz - dz - current_mass * gravity) / current_mass
             
-            fig_anim.update_layout(template=dark_template, updatemenus=[dict(type="buttons", showactive=False)])
-            st.plotly_chart(fig_anim, use_container_width=True)
+            # Integration
+            vx += ax * dt
+            vy += ay * dt
+            vz += az * dt
+            
+            x += vx * dt
+            y += vy * dt
+            z += vz * dt
+            
+            # Ground Collision
+            if z <= 0 and t > 5:
+                z = 0
+                vz = 0
+                if status != "Nominal":
+                    status = "CATASTROPHIC IMPACT"
+                break
+                
+            time_list.append(t)
+            x_list.append(x / 1000) # Convert to km
+            y_list.append(y / 1000) 
+            z_list.append(z / 1000) 
+            status_list.append(status)
+            
+        progress_bar.empty()
+        
+        if will_fail:
+            st.error(f"💥 {status_list[-1]} at T+{failure_time}s")
+        else:
+            st.success("✨ ORBITAL INSERTION CONFIRMED")
+        
+        # Combine Data for Plotting
+        sim_df = pd.DataFrame({"Time (s)": time_list, "Downrange (km)": x_list, "Crossrange (km)": y_list, "Altitude (km)": z_list, "Status": status_list})
+        
+        # --- 3D Orbital Trajectory Map ---
+        st.markdown("### 🛰️ 3D Orbital Trajectory")
+        fig_3d_traj = px.scatter_3d(sim_df, x="Downrange (km)", y="Crossrange (km)", z="Altitude (km)", 
+                                    color="Status", title="Spatial Telemetry Breadcrumb Trail",
+                                    color_discrete_map={"Nominal": "#00ff88", "ANOMALY - THRUST LOSS": "#ff9900", "CATASTROPHIC IMPACT": "#ff3366"})
+        fig_3d_traj.update_traces(marker=dict(size=4))
+        fig_3d_traj.update_layout(template=dark_template, height=600, scene=dict(
+            xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
+            yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
+            zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)")
+        ))
+        st.plotly_chart(fig_3d_traj, use_container_width=True)
+
+        # --- 2D Animated Flight Path ---
+        st.markdown("### 📺 2D Temporal Animation")
+        sim_df_anim = sim_df.iloc[::2, :].copy() 
+        fig_anim = px.scatter(sim_df_anim, x="Time (s)", y="Altitude (km)", animation_frame="Time (s)", 
+                              range_x=[0, sim_df_anim['Time (s)'].max() + 10], range_y=[0, sim_df_anim['Altitude (km)'].max() * 1.2])
+        fig_anim.update_traces(marker=dict(size=20, symbol="triangle-up", 
+                               color=np.where(sim_df_anim['Status'] == "Nominal", "#00ff88", "#ff3366"),
+                               line=dict(width=2, color="white")))
+        fig_anim.add_trace(go.Scatter(x=sim_df_anim["Time (s)"], y=sim_df_anim["Altitude (km)"],
+                                      mode="lines", line=dict(color="rgba(255, 255, 255, 0.2)", width=2), name="Flight Path"))
+        fig_anim.update_layout(template=dark_template, updatemenus=[dict(type="buttons", showactive=False)])
+        st.plotly_chart(fig_anim, use_container_width=True)
