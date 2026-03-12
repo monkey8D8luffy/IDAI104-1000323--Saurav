@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-import seaborn as sns
 import time
 
 # ==========================================
@@ -12,72 +10,94 @@ import time
 # ==========================================
 st.set_page_config(page_title="🚀 Aerospace Command Center", layout="wide", page_icon="🌌")
 
+# Injecting the new UI/UX based on the Astronaut Mockup
 st.markdown("""
     <style>
-    /* Deep Space Nebula Background */
+    /* Full immersive background matching the astronaut mockup */
     .stApp { 
-        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #05050f 100%); 
-        background-attachment: fixed; 
+        /* Replace the URL below with your local image path or preferred hosted image */
+        background-image: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=3272&auto=format&fit=crop'); 
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
     }
     
-    /* Typography & Global Colors */
+    /* Typography & Global Colors - adjusted for a cleaner glass look */
     h1, h2, h3, h4, p, span, div, label { 
-        color: #f8f9fa; 
+        color: #ffffff; 
         font-family: 'Inter', 'Segoe UI', sans-serif; 
+        text-shadow: 0px 2px 4px rgba(0,0,0,0.5); /* Helps text stand out against the space background */
     }
     
-    /* Neon Cyber Accents for Headers */
-    h1 { text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); color: #00f2fe !important; }
-    h2, h3 { color: #4facfe !important; }
+    h1 { font-weight: 300; letter-spacing: 4px; }
+    h2, h3 { font-weight: 400; color: #e0f2fe !important; }
     
-    /* Sidebar Glassmorphism */
+    /* Sidebar Clear Glassmorphism */
     [data-testid="stSidebar"] { 
-        background: rgba(15, 12, 41, 0.6) !important; 
-        backdrop-filter: blur(20px); 
-        -webkit-backdrop-filter: blur(20px); 
-        border-right: 1px solid rgba(0, 242, 254, 0.2); 
+        background: rgba(255, 255, 255, 0.05) !important; 
+        backdrop-filter: blur(16px); 
+        -webkit-backdrop-filter: blur(16px); 
+        border-right: 1px solid rgba(255, 255, 255, 0.2); 
     }
     
-    /* Advanced Glass Cards with Subtle Neon Borders */
+    /* Fluid/Morphing Clear Glass Animations */
+    @keyframes waterFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes morph {
+        0% { border-radius: 20px; }
+        50% { border-radius: 24px 18px 24px 18px; }
+        100% { border-radius: 20px; }
+    }
+
+    /* Advanced Clear Glass Cards */
     .glass-card { 
-        background: rgba(255, 255, 255, 0.02); 
-        backdrop-filter: blur(25px); 
-        -webkit-backdrop-filter: blur(25px); 
-        border-radius: 16px; 
-        border: 1px solid rgba(0, 242, 254, 0.15); 
+        /* Translucent gradient for water flow effect */
+        background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.02), rgba(255,255,255,0.1));
+        background-size: 200% 200%;
+        backdrop-filter: blur(16px); 
+        -webkit-backdrop-filter: blur(16px); 
+        border: 1px solid rgba(255, 255, 255, 0.4); 
         padding: 25px; 
         margin-bottom: 25px; 
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 242, 254, 0.02); 
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1); 
+        
+        /* Applying the Morph and Water Flow animations */
+        animation: waterFlow 8s ease infinite, morph 10s ease-in-out infinite;
     }
     
-    /* Sleek Cyber Tabs */
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; background: transparent; }
+    /* Sleek Translucent Tabs */
+    .stTabs [data-baseweb="tab-list"] { gap: 15px; background: transparent; }
     .stTabs [data-baseweb="tab"] { 
-        background: rgba(255, 255, 255, 0.03); 
-        backdrop-filter: blur(10px); 
-        border: 1px solid rgba(255, 255, 255, 0.05); 
-        border-radius: 8px 8px 0 0; 
+        background: rgba(255, 255, 255, 0.1); 
+        backdrop-filter: blur(12px); 
+        border: 1px solid rgba(255, 255, 255, 0.2); 
+        border-radius: 12px 12px 0 0; 
         padding: 12px 30px; 
-        transition: 0.3s ease; 
+        transition: all 0.4s ease; 
     }
     .stTabs [data-baseweb="tab"][aria-selected="true"] { 
-        background: rgba(0, 242, 254, 0.1); 
-        border-bottom: 3px solid #00f2fe;
-        border-top: 1px solid rgba(0, 242, 254, 0.3);
-        border-left: 1px solid rgba(0, 242, 254, 0.3);
-        border-right: 1px solid rgba(0, 242, 254, 0.3);
-        color: #00f2fe;
-        text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+        background: rgba(255, 255, 255, 0.25); 
+        border-bottom: 3px solid #ffffff;
+        border-top: 1px solid rgba(255, 255, 255, 0.6);
+        border-left: 1px solid rgba(255, 255, 255, 0.6);
+        border-right: 1px solid rgba(255, 255, 255, 0.6);
+        color: #ffffff;
+        box-shadow: 0 -4px 15px rgba(255,255,255,0.1);
     }
     
-    hr { border-color: rgba(0, 242, 254, 0.15); margin-top: 40px; margin-bottom: 40px; }
+    hr { border-color: rgba(255, 255, 255, 0.3); margin-top: 40px; margin-bottom: 40px; }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="glass-card">
-    <h1 style='text-align: center; margin-bottom: 5px; font-weight: 400; letter-spacing: 3px;'>AEROSPACE COMMAND TERMINAL</h1>
-    <p style='text-align: center; font-size: 1.1em; opacity: 0.7; text-transform: uppercase; letter-spacing: 2px; color: #a0aec0;'>Orbital Telemetry & Predictive Analytics</p>
+    <h1 style='text-align: center; margin-bottom: 5px; font-weight: 300;'>AEROSPACE</h1>
+    <p style='text-align: center; font-size: 1.1em; opacity: 0.9; text-transform: uppercase; letter-spacing: 2px;'>Mission Data Flight Simulator</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -112,26 +132,19 @@ VEHICLE_STATS = {
     "Ariane 6": {"mass_kg": 800000, "thrust_N": 10000000, "drag": 0.45}
 }
 
-# Base Plotly Template for Cyber Theme
+# Base Plotly Template adjusted for the new clean glass look
 cyber_template = dict(
     layout=go.Layout(
         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#cfd8dc', family="Inter"),
-        title=dict(font=dict(color='#00f2fe', size=18)),
-        legend=dict(font=dict(color='#cfd8dc'), bgcolor='rgba(0,0,0,0)'),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zerolinecolor='rgba(0,242,254,0.2)'),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zerolinecolor='rgba(0,242,254,0.2)')
+        font=dict(color='#ffffff', family="Inter"),
+        title=dict(font=dict(color='#ffffff', size=18)),
+        legend=dict(font=dict(color='#ffffff'), bgcolor='rgba(255,255,255,0.05)', bordercolor='rgba(255,255,255,0.2)', borderwidth=1),
+        xaxis=dict(gridcolor='rgba(255,255,255,0.1)', zerolinecolor='rgba(255,255,255,0.3)'),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.1)', zerolinecolor='rgba(255,255,255,0.3)')
     )
 )
 
 color_map_status = {"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}
-
-# Set dark theme for Matplotlib and Seaborn
-plt.style.use('dark_background')
-fig_rc = {'figure.facecolor': '#0f0c29', 'axes.facecolor': '#0f0c29', 
-          'axes.edgecolor': '#00f2fe', 'text.color': '#cfd8dc', 
-          'xtick.color': '#00f2fe', 'ytick.color': '#00f2fe'}
-sns.set_theme(style="darkgrid", rc=fig_rc)
 
 # ==========================================
 # 3. TABS & SIDEBAR
@@ -155,80 +168,59 @@ with tab1:
 
     st.markdown(f"<div class='glass-card'><h4>📡 Uplink Active: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
     
-    # --- PART A: EXECUTIVE SUMMARY (Plotly) ---
     st.markdown("<h2>Executive Summary: Key Mission Metrics</h2>", unsafe_allow_html=True)
     col_a1, col_a2 = st.columns(2)
     with col_a1:
-        fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Payload vs Fuel Consumption (Plotly)", color_discrete_map=color_map_status)
+        fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Payload vs Fuel Consumption", color_discrete_map=color_map_status)
         fig1.update_layout(template=cyber_template)
+        fig1.update_traces(marker=dict(line=dict(width=1, color='rgba(255,255,255,0.8)')))
         st.plotly_chart(fig1, use_container_width=True)
 
     with col_a2:
         cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
-        fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Total Mission Cost by Outcome (Plotly)", color_discrete_map=color_map_status)
+        fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Total Mission Cost by Outcome", color_discrete_map=color_map_status)
         fig2.update_layout(template=cyber_template)
         st.plotly_chart(fig2, use_container_width=True)
 
-    st.markdown("<hr>", unsafe_allow_html=True)
+    col_a3, col_a4 = st.columns(2)
+    with col_a3:
+        line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
+        fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True, title="Mission Duration vs Distance")
+        fig3.update_layout(template=cyber_template)
+        fig3.update_traces(line_color='#ffffff', line_width=3, marker=dict(size=8, color="#00FFA3", line=dict(color="white", width=1)))
+        st.plotly_chart(fig3, use_container_width=True)
 
-    # --- PART B: CORE STATISTICAL ANALYSIS (Matplotlib & Seaborn - Rubric Requirement) ---
-    st.markdown("<h2>Core Statistical Analysis (Matplotlib & Seaborn)</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #a0aec0;'>Fulfilling static plotting requirements utilizing matplotlib.pyplot and seaborn.</p>", unsafe_allow_html=True)
-    
-    col_s1, col_s2, col_s3 = st.columns(3)
-    
-    with col_s1:
-        st.markdown("#### Mission Cost (Matplotlib Bar)")
-        fig_m1, ax_m1 = plt.subplots(figsize=(5, 4))
-        cost_agg = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].mean()
-        # Matplotlib simple bar plot
-        ax_m1.bar(cost_agg.index, cost_agg.values, color=['#FF3366', '#00FFA3'])
-        ax_m1.set_ylabel("Avg Cost (Billion USD)")
-        ax_m1.set_title("Average Cost vs Outcome")
-        # Displaying plot using st.pyplot(fig)
-        st.pyplot(fig_m1)
-        
-    with col_s2:
-        st.markdown("#### Crew Size (Seaborn Boxplot)")
-        fig_s1, ax_s1 = plt.subplots(figsize=(5, 4))
-        # Seaborn statistical visual
-        sns.boxplot(data=filtered_data, x='Outcome Status', y='Crew Size', palette={"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}, ax=ax_s1)
-        ax_s1.set_title("Crew Size Distribution")
-        # Displaying plot using st.pyplot(fig)
-        st.pyplot(fig_s1)
-        
-    with col_s3:
-        st.markdown("#### Payload vs Fuel (Seaborn Scatter)")
-        fig_s2, ax_s2 = plt.subplots(figsize=(5, 4))
-        # Seaborn statistical visual
-        sns.scatterplot(data=filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', hue='Outcome Status', palette={"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}, ax=ax_s2)
-        ax_s2.set_title("Payload Efficiency")
-        # Displaying plot using st.pyplot(fig)
-        st.pyplot(fig_s2)
+    with col_a4:
+        fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', color='Outcome Status', title="Crew Size Distribution", color_discrete_map=color_map_status)
+        fig4.update_layout(template=cyber_template)
+        st.plotly_chart(fig4, use_container_width=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # --- PART C: DEEP ORBITAL ANALYTICS (Plotly) ---
     st.markdown("<h2>Deep Space Analytics: Advanced Telemetry</h2>", unsafe_allow_html=True)
-    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], color_continuous_scale=px.colors.sequential.Sunsetdark, opacity=0.9)
+    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], color_continuous_scale=px.colors.sequential.Tealgrn, opacity=0.9)
     fig_3d.update_layout(template=cyber_template, height=700, scene=dict(
-        xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-        yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-        zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)")
+        xaxis=dict(backgroundcolor="rgba(255,255,255,0.05)", gridcolor="rgba(255,255,255,0.2)"),
+        yaxis=dict(backgroundcolor="rgba(255,255,255,0.05)", gridcolor="rgba(255,255,255,0.2)"),
+        zaxis=dict(backgroundcolor="rgba(255,255,255,0.05)", gridcolor="rgba(255,255,255,0.2)")
     ))
     st.plotly_chart(fig_3d, use_container_width=True)
 
     col_b1, col_b2 = st.columns(2)
     with col_b1:
         num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 'Distance from Earth (light-years)']]
-        fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='Picnic', origin='lower', title="Metric Correlation Matrix")
+        fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='Tealgrn', origin='lower', title="Metric Correlation Matrix")
         fig_corr.update_layout(template=cyber_template, height=500)
         st.plotly_chart(fig_corr, use_container_width=True)
 
     with col_b2:
-        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Plotly3', title="Mission Taxonomy Architecture")
+        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Tealgrn', title="Mission Taxonomy Architecture")
         fig_sun.update_layout(template=cyber_template, height=500, margin=dict(t=40, l=0, r=0, b=0))
         st.plotly_chart(fig_sun, use_container_width=True)
+
+    fig_violin = px.violin(filtered_data, x='Mission Type', y='Scientific Yield (points)', color='Mission Type', box=True, points="all", hover_data=['Mission Name', 'Launch Vehicle'], title="Scientific Yield Distribution Density")
+    fig_violin.update_layout(template=cyber_template, height=500, showlegend=False)
+    st.plotly_chart(fig_violin, use_container_width=True)
 
 with tab2:
     st.markdown("<div class='glass-card'><h3>⚙️ Dynamic 3D Flight Simulator</h3><p>Choose between utilizing real dataset telemetry or engaging the Manual Override to build your own aerodynamic profile.</p></div>", unsafe_allow_html=True)
@@ -364,9 +356,9 @@ with tab2:
                                     color_discrete_map={"Nominal": "#00FFA3", "ANOMALY - THRUST LOSS": "#FF9900", "CATASTROPHIC IMPACT": "#FF3366"})
         fig_3d_traj.update_traces(marker=dict(size=4, opacity=0.8))
         fig_3d_traj.update_layout(template=cyber_template, height=600, scene=dict(
-            xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-            yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-            zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)")
+            xaxis=dict(backgroundcolor="rgba(255,255,255,0.05)", gridcolor="rgba(255,255,255,0.2)"),
+            yaxis=dict(backgroundcolor="rgba(255,255,255,0.05)", gridcolor="rgba(255,255,255,0.2)"),
+            zaxis=dict(backgroundcolor="rgba(255,255,255,0.05)", gridcolor="rgba(255,255,255,0.2)")
         ))
         st.plotly_chart(fig_3d_traj, use_container_width=True)
 
@@ -378,6 +370,6 @@ with tab2:
                                color=np.where(sim_df_anim['Status'] == "Nominal", "#00FFA3", "#FF3366"),
                                line=dict(width=2, color="white")))
         fig_anim.add_trace(go.Scatter(x=sim_df_anim["Time (s)"], y=sim_df_anim["Altitude (km)"],
-                                      mode="lines", line=dict(color="rgba(0, 242, 254, 0.3)", width=3), name="Flight Path"))
+                                      mode="lines", line=dict(color="rgba(255, 255, 255, 0.6)", width=3), name="Flight Path"))
         fig_anim.update_layout(template=cyber_template, updatemenus=[dict(type="buttons", showactive=False)])
         st.plotly_chart(fig_anim, use_container_width=True)
