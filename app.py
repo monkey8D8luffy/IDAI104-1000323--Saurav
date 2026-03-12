@@ -8,30 +8,133 @@ import seaborn as sns
 import time
 
 # ==========================================
-# 1. PAGE CONFIGURATION & DEEP SPACE CSS
+# 1. PAGE CONFIGURATION & ASTRONAUT GLASS CSS
 # ==========================================
-st.set_page_config(page_title="🚀 Aerospace Command Center", layout="wide", page_icon="🌌")
+st.set_page_config(page_title="🧑‍🚀 Space Telemetry & Simulation", layout="wide", page_icon="🌌")
 
 st.markdown("""
     <style>
-    .stApp { background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #05050f 100%); background-attachment: fixed; }
-    h1, h2, h3, h4, p, span, div, label { color: #f8f9fa; font-family: 'Inter', 'Segoe UI', sans-serif; }
-    h1 { text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); color: #00f2fe !important; }
-    h2, h3 { color: #4facfe !important; }
-    [data-testid="stSidebar"] { background: rgba(15, 12, 41, 0.6) !important; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(0, 242, 254, 0.2); }
-    .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 16px; border: 1px solid rgba(0, 242, 254, 0.15); padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 242, 254, 0.02); }
-    .telemetry-box { background: rgba(0, 242, 254, 0.05); border-left: 4px solid #00f2fe; padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace; margin-bottom: 20px;}
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; background: transparent; }
-    .stTabs [data-baseweb="tab"] { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px 8px 0 0; padding: 12px 30px; transition: 0.3s ease; }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] { background: rgba(0, 242, 254, 0.1); border-bottom: 3px solid #00f2fe; border-top: 1px solid rgba(0, 242, 254, 0.3); border-left: 1px solid rgba(0, 242, 254, 0.3); border-right: 1px solid rgba(0, 242, 254, 0.3); color: #00f2fe; text-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
-    hr { border-color: rgba(0, 242, 254, 0.15); margin-top: 40px; margin-bottom: 40px; }
+    /* Animated Deep Space / Water Flow Background */
+    @keyframes gradientFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .stApp { 
+        background: linear-gradient(-45deg, #050b14, #0a1128, #101820, #040914); 
+        background-size: 400% 400%;
+        animation: gradientFlow 15s ease infinite;
+        background-attachment: fixed; 
+    }
+    
+    /* Morphing Nebula / Water Blob Animations */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 10%; left: 10%; width: 40vw; height: 40vw;
+        background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, rgba(0,0,0,0) 60%);
+        animation: morphBlob 12s ease-in-out infinite alternate;
+        z-index: -1;
+        pointer-events: none;
+    }
+    .stApp::after {
+        content: "";
+        position: fixed;
+        bottom: 10%; right: 5%; width: 35vw; height: 35vw;
+        background: radial-gradient(circle, rgba(162, 0, 255, 0.08) 0%, rgba(0,0,0,0) 60%);
+        animation: morphBlob2 15s ease-in-out infinite alternate;
+        z-index: -1;
+        pointer-events: none;
+    }
+    
+    @keyframes morphBlob {
+        0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg) scale(1); }
+        100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(360deg) scale(1.1); }
+    }
+    @keyframes morphBlob2 {
+        0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg) scale(1); }
+        100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(-360deg) scale(1.2); }
+    }
+
+    /* Global Typography */
+    h1, h2, h3, h4, p, span, div, label { color: #ffffff; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 300; }
+    h1 { text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+    
+    /* Clear Glass Sidebar */
+    [data-testid="stSidebar"] { 
+        background: rgba(255, 255, 255, 0.02) !important; 
+        backdrop-filter: blur(25px); 
+        -webkit-backdrop-filter: blur(25px); 
+        border-right: 1px solid rgba(255, 255, 255, 0.1); 
+    }
+    
+    /* Clear Glassmorph UI Cards with Water Shine */
+    .glass-card { 
+        background: rgba(255, 255, 255, 0.03); 
+        backdrop-filter: blur(30px); 
+        -webkit-backdrop-filter: blur(30px); 
+        border-radius: 20px; 
+        border: 1px solid rgba(255, 255, 255, 0.15); 
+        padding: 30px; 
+        margin-bottom: 25px; 
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.05); 
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Water Flow Glass Animation Effect inside cards */
+    .glass-card::after {
+        content: "";
+        position: absolute;
+        top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+        transform: skewX(-25deg);
+        animation: waterGlassShine 8s infinite;
+        pointer-events: none;
+    }
+    @keyframes waterGlassShine {
+        0% { left: -100%; }
+        20% { left: 200%; }
+        100% { left: 200%; }
+    }
+
+    .telemetry-box { 
+        background: rgba(255, 255, 255, 0.05); 
+        backdrop-filter: blur(10px);
+        border-left: 4px solid #ffffff; 
+        padding: 15px; 
+        border-radius: 8px; 
+        font-family: 'Courier New', Courier, monospace; 
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    /* Liquid Tabs */
+    .stTabs [data-baseweb="tab-list"] { gap: 15px; background: transparent; border: none; }
+    .stTabs [data-baseweb="tab"] { 
+        background: rgba(255, 255, 255, 0.02); 
+        backdrop-filter: blur(15px); 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        border-radius: 30px; 
+        padding: 10px 30px; 
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] { 
+        background: rgba(255, 255, 255, 0.15); 
+        border: 1px solid rgba(255, 255, 255, 0.4); 
+        color: #ffffff; 
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+    
+    hr { border-color: rgba(255, 255, 255, 0.1); margin-top: 40px; margin-bottom: 40px; }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="glass-card">
-    <h1 style='text-align: center; margin-bottom: 5px; font-weight: 400; letter-spacing: 3px;'>AEROSPACE COMMAND TERMINAL</h1>
-    <p style='text-align: center; font-size: 1.1em; opacity: 0.7; text-transform: uppercase; letter-spacing: 2px; color: #a0aec0;'>Orbital Telemetry & Predictive Analytics Software</p>
+    <h1 style='text-align: center; margin-bottom: 5px; font-weight: 300; letter-spacing: 4px;'>🧑‍🚀 ASTRONAUT COMMAND TERMINAL</h1>
+    <p style='text-align: center; font-size: 1.1em; opacity: 0.8; text-transform: uppercase; letter-spacing: 2px;'>Orbital Telemetry & Predictive Analytics Software</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -66,23 +169,25 @@ VEHICLE_STATS = {
     "Ariane 6": {"mass_kg": 800000, "thrust_N": 10000000, "drag": 0.45}
 }
 
-cyber_template = dict(
+# Ultra-clean Transparent Plotly Template
+glass_template = dict(
     layout=go.Layout(
         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#cfd8dc', family="Inter"),
-        title=dict(font=dict(color='#00f2fe', size=16)),
-        legend=dict(font=dict(color='#cfd8dc'), bgcolor='rgba(0,0,0,0)'),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)', zerolinecolor='rgba(0,242,254,0.2)'),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', zerolinecolor='rgba(0,242,254,0.2)')
+        font=dict(color='#ffffff', family="Inter"),
+        title=dict(font=dict(color='#ffffff', size=16, weight='300')),
+        legend=dict(font=dict(color='#ffffff'), bgcolor='rgba(0,0,0,0)'),
+        xaxis=dict(gridcolor='rgba(255,255,255,0.08)', zerolinecolor='rgba(255,255,255,0.2)'),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.08)', zerolinecolor='rgba(255,255,255,0.2)')
     )
 )
 
 color_map_status = {"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}
 
+# Clear Glass Matplotlib/Seaborn theme
 plt.style.use('dark_background')
-fig_rc = {'figure.facecolor': '#0f0c29', 'axes.facecolor': '#0f0c29', 
-          'axes.edgecolor': '#00f2fe', 'text.color': '#cfd8dc', 
-          'xtick.color': '#00f2fe', 'ytick.color': '#00f2fe'}
+fig_rc = {'figure.facecolor': 'rgba(0,0,0,0)', 'axes.facecolor': 'rgba(0,0,0,0)', 
+          'axes.edgecolor': 'rgba(255,255,255,0.3)', 'text.color': '#ffffff', 
+          'xtick.color': '#ffffff', 'ytick.color': '#ffffff', 'grid.color': 'rgba(255,255,255,0.1)'}
 sns.set_theme(style="darkgrid", rc=fig_rc)
 
 # ==========================================
@@ -91,7 +196,7 @@ sns.set_theme(style="darkgrid", rc=fig_rc)
 tab1, tab2 = st.tabs(["📊 Mission Data Intelligence", "🚀 Advanced Flight Physics Simulator"])
 
 with tab1:
-    st.sidebar.markdown("<h3>⎈ Telemetry Filters</h3>", unsafe_allow_html=True)
+    st.sidebar.markdown("<h3 style='font-weight:300;'>⎈ Telemetry Filters</h3>", unsafe_allow_html=True)
     selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=["All"] + list(data['Mission Type'].unique()))
     selected_vehicle = st.sidebar.selectbox("Launch Platform", options=["All"] + list(data['Launch Vehicle'].unique()))
     min_year, max_year = int(data['Launch Year'].min()), int(data['Launch Year'].max())
@@ -102,33 +207,33 @@ with tab1:
     if selected_vehicle != "All": filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
     filtered_data = filtered_data[(filtered_data['Launch Year'] >= selected_year_range[0]) & (filtered_data['Launch Year'] <= selected_year_range[1])]
 
-    st.markdown(f"<div class='glass-card'><h4>📡 Uplink Active: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='glass-card'><h4 style='font-weight:300;'>📡 Uplink Active: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
     
     # --- PART A: EXECUTIVE SUMMARY ---
     st.markdown("<h2>Macro-Level Launch Metrics</h2>", unsafe_allow_html=True)
     col_a1, col_a2 = st.columns(2)
     with col_a1:
         fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Mass-to-Propellant Ratio & Mission Viability Analysis", color_discrete_map=color_map_status)
-        fig1.update_layout(template=cyber_template)
+        fig1.update_layout(template=glass_template)
         st.plotly_chart(fig1, use_container_width=True)
 
     with col_a2:
         cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
         fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Aggregate Financial Expenditure by Mission Outcome", color_discrete_map=color_map_status)
-        fig2.update_layout(template=cyber_template)
+        fig2.update_layout(template=glass_template)
         st.plotly_chart(fig2, use_container_width=True)
 
     col_a3, col_a4 = st.columns(2)
     with col_a3:
         line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
         fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True, title="Orbital Reach: Distance Traveled vs. Operational Duration")
-        fig3.update_layout(template=cyber_template)
-        fig3.update_traces(line_color='#00f2fe', line_width=3, marker=dict(size=6, color="#ff007f"))
+        fig3.update_layout(template=glass_template)
+        fig3.update_traces(line_color='#ffffff', line_width=2, marker=dict(size=8, color="#00f2fe", line=dict(width=1, color="white")))
         st.plotly_chart(fig3, use_container_width=True)
 
     with col_a4:
         fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', color='Outcome Status', title="Personnel Capacity Distribution Across Mission Status", color_discrete_map=color_map_status)
-        fig4.update_layout(template=cyber_template)
+        fig4.update_layout(template=glass_template)
         st.plotly_chart(fig4, use_container_width=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
@@ -139,46 +244,53 @@ with tab1:
     
     with col_s1:
         fig_m1, ax_m1 = plt.subplots(figsize=(5, 4))
+        # Ensure transparent figure background
+        fig_m1.patch.set_alpha(0.0)
+        ax_m1.patch.set_alpha(0.0)
         cost_agg = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].mean()
-        ax_m1.bar(cost_agg.index, cost_agg.values, color=['#FF3366', '#00FFA3'])
+        ax_m1.bar(cost_agg.index, cost_agg.values, color=['rgba(255, 51, 102, 0.8)', 'rgba(0, 255, 163, 0.8)'], edgecolor='white')
         ax_m1.set_ylabel("Avg Cost (Billion USD)")
-        ax_m1.set_title("Mean Capital Expenditure per Mission Status", fontsize=10)
+        ax_m1.set_title("Mean Capital Expenditure", fontsize=11, fontweight='light')
         st.pyplot(fig_m1)
         
     with col_s2:
         fig_s1, ax_s1 = plt.subplots(figsize=(5, 4))
-        sns.boxplot(data=filtered_data, x='Outcome Status', y='Crew Size', palette={"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}, ax=ax_s1)
-        ax_s1.set_title("Statistical Dispersion of Crew Configurations", fontsize=10)
+        fig_s1.patch.set_alpha(0.0)
+        ax_s1.patch.set_alpha(0.0)
+        sns.boxplot(data=filtered_data, x='Outcome Status', y='Crew Size', palette={"Nominal (Success)": "rgba(0, 255, 163, 0.7)", "Anomaly (Failure)": "rgba(255, 51, 102, 0.7)"}, ax=ax_s1)
+        ax_s1.set_title("Crew Configurations", fontsize=11, fontweight='light')
         st.pyplot(fig_s1)
         
     with col_s3:
         fig_s2, ax_s2 = plt.subplots(figsize=(5, 4))
-        sns.scatterplot(data=filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', hue='Outcome Status', palette={"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}, ax=ax_s2)
-        ax_s2.set_title("Propellant Consumption vs. Payload Mass", fontsize=10)
+        fig_s2.patch.set_alpha(0.0)
+        ax_s2.patch.set_alpha(0.0)
+        sns.scatterplot(data=filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', hue='Outcome Status', palette={"Nominal (Success)": "#00FFA3", "Anomaly (Failure)": "#FF3366"}, alpha=0.8, ax=ax_s2)
+        ax_s2.set_title("Propellant vs. Payload", fontsize=11, fontweight='light')
         st.pyplot(fig_s2)
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
     # --- PART C: DEEP ORBITAL ANALYTICS ---
     st.markdown("<h2>Multi-Dimensional Systems Analytics</h2>", unsafe_allow_html=True)
-    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], title="3D Parameter Space: Interstellar Distance, Fuel Mass, and Payload Limits", color_continuous_scale=px.colors.sequential.Sunsetdark, opacity=0.9)
-    fig_3d.update_layout(template=cyber_template, height=700, scene=dict(
-        xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-        yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-        zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)")
+    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], title="3D Parameter Space: Interstellar Distance, Fuel Mass, and Payload Limits", color_continuous_scale=px.colors.sequential.Tealgrn, opacity=0.8)
+    fig_3d.update_layout(template=glass_template, height=700, scene=dict(
+        xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
+        yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
+        zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)")
     ))
     st.plotly_chart(fig_3d, use_container_width=True)
 
     col_b1, col_b2 = st.columns(2)
     with col_b1:
         num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 'Distance from Earth (light-years)']]
-        fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='Picnic', origin='lower', title="Pearson Correlation Matrix of Key Mission Telemetry")
-        fig_corr.update_layout(template=cyber_template, height=500)
+        fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='ice', origin='lower', title="Pearson Correlation Matrix of Key Mission Telemetry")
+        fig_corr.update_layout(template=glass_template, height=500)
         st.plotly_chart(fig_corr, use_container_width=True)
 
     with col_b2:
-        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Plotly3', title="Hierarchical Architecture of Spacecraft & Mission Objectives")
-        fig_sun.update_layout(template=cyber_template, height=500, margin=dict(t=40, l=0, r=0, b=0))
+        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Mint', title="Hierarchical Architecture of Spacecraft & Mission Objectives")
+        fig_sun.update_layout(template=glass_template, height=500, margin=dict(t=40, l=0, r=0, b=0))
         st.plotly_chart(fig_sun, use_container_width=True)
 
 with tab2:
@@ -203,7 +315,7 @@ with tab2:
         success_chance = m_data['Mission Success (%)']
         
     else:
-        st.markdown("#### 🔧 Vehicle Engineering Configuration")
+        st.markdown("<h4 style='font-weight: 300;'>🔧 Vehicle Engineering Configuration</h4>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         init_mass = col1.number_input("Dry Rocket Mass (kg)", value=1000000, step=50000)
         thrust = col2.number_input("Engine Thrust (N)", value=35000000, step=1000000)
@@ -306,7 +418,7 @@ with tab2:
             
             current_twr = current_thrust / (current_mass * gravity) if current_mass > 0 else 0
 
-            # Live HUD Update (sampled every 5 frames for Streamlit performance)
+            # Live HUD Update
             if t_step % 5 == 0:
                 live_telemetry.markdown(f"""
                 <div class='telemetry-box'>
@@ -333,28 +445,27 @@ with tab2:
         st.markdown("### 🛰️ 3D Kinematic Spatial Trajectory")
         fig_3d_traj = go.Figure()
         
-        # Ground Plane representation
-        fig_3d_traj.add_trace(go.Surface(z=np.zeros((5,5)), x=np.linspace(0, max(x_list)*1.2, 5), y=np.linspace(0, max(y_list)*1.2, 5), colorscale='Greens', opacity=0.1, showscale=False, name="Ground / Ocean"))
+        # Ground Plane
+        fig_3d_traj.add_trace(go.Surface(z=np.zeros((5,5)), x=np.linspace(0, max(x_list)*1.2, 5), y=np.linspace(0, max(y_list)*1.2, 5), colorscale='Greys', opacity=0.05, showscale=False, name="Ground"))
         
-        # Continuous Trajectory Line colored by Mach number
+        # Path
         fig_3d_traj.add_trace(go.Scatter3d(
             x=sim_df["Downrange (km)"], y=sim_df["Crossrange (km)"], z=sim_df["Altitude (km)"],
-            mode='lines', line=dict(color=sim_df['Mach'], colorscale='Plasma', width=6, showscale=True, colorbar=dict(title="Mach Number")),
+            mode='lines', line=dict(color=sim_df['Mach'], colorscale='Teal', width=6, showscale=True, colorbar=dict(title="Mach", tickfont=dict(color='white'), titlefont=dict(color='white'))),
             name="Flight Path"
         ))
         
-        # Impact/Current Point Marker
         end_color = "#FF3366" if will_fail else "#00FFA3"
         fig_3d_traj.add_trace(go.Scatter3d(
             x=[sim_df["Downrange (km)"].iloc[-1]], y=[sim_df["Crossrange (km)"].iloc[-1]], z=[sim_df["Altitude (km)"].iloc[-1]],
-            mode='markers+text', marker=dict(size=8, color=end_color), text=[status_list[-1]], textposition="top center", name="Terminal State"
+            mode='markers+text', marker=dict(size=8, color=end_color, line=dict(width=2, color='white')), text=[status_list[-1]], textposition="top center", name="Terminal State"
         ))
 
-        fig_3d_traj.update_layout(template=cyber_template, height=700, scene=dict(
+        fig_3d_traj.update_layout(template=glass_template, height=700, scene=dict(
             xaxis_title="Downrange (km)", yaxis_title="Crossrange (km)", zaxis_title="Altitude (km)",
-            xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-            yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)"),
-            zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(0,242,254,0.1)")
+            xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
+            yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)"),
+            zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)")
         ))
         st.plotly_chart(fig_3d_traj, use_container_width=True)
 
@@ -364,6 +475,6 @@ with tab2:
                               range_x=[0, sim_df['Downrange (km)'].max() + 10], range_y=[0, sim_df['Altitude (km)'].max() * 1.2],
                               title="Cross-sectional Ascent Trajectory")
         fig_anim.update_traces(marker=dict(size=15, symbol="triangle-up", color=np.where(sim_df.iloc[::2, :]['Status'] == "Nominal", "#00FFA3", "#FF3366"), line=dict(width=2, color="white")))
-        fig_anim.add_trace(go.Scatter(x=sim_df["Downrange (km)"], y=sim_df["Altitude (km)"], mode="lines", line=dict(color="rgba(0, 242, 254, 0.4)", width=2), name="Projected Path"))
-        fig_anim.update_layout(template=cyber_template, updatemenus=[dict(type="buttons", showactive=False)])
+        fig_anim.add_trace(go.Scatter(x=sim_df["Downrange (km)"], y=sim_df["Altitude (km)"], mode="lines", line=dict(color="rgba(255, 255, 255, 0.4)", width=2), name="Projected Path"))
+        fig_anim.update_layout(template=glass_template, updatemenus=[dict(type="buttons", showactive=False, font=dict(color='black'))])
         st.plotly_chart(fig_anim, use_container_width=True)
