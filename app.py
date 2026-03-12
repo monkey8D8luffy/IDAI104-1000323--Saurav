@@ -203,8 +203,14 @@ with tab1:
     selected_year_range = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
 
     filtered_data = data.copy()
-    if selected_mission_type != "All": filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
-    if selected_vehicle != "All": filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
+    
+    # Broken down multi-line if statements
+    if selected_mission_type != "All": 
+        filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
+        
+    if selected_vehicle != "All": 
+        filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
+        
     filtered_data = filtered_data[(filtered_data['Launch Year'] >= selected_year_range[0]) & (filtered_data['Launch Year'] <= selected_year_range[1])]
 
     st.markdown(f"<div class='glass-card'><h4 style='font-weight:300;'>📡 Uplink Active: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
@@ -396,9 +402,15 @@ with tab2:
             
             drag_force = 0.5 * drag_coeff * air_density * (v_mag ** 2)
             
-            dx = drag_force * (vx / v_mag) if v_mag > 0 else 0
-            dy = drag_force * (vy / v_mag) if v_mag > 0 else 0
-            dz = drag_force * (vz / v_mag) if v_mag > 0 else 0
+            # Broken down multi-line statements for velocity vectors
+            if v_mag > 0:
+                dx = drag_force * (vx / v_mag)
+                dy = drag_force * (vy / v_mag)
+                dz = drag_force * (vz / v_mag)
+            else:
+                dx = 0
+                dy = 0
+                dz = 0
             
             tx = current_thrust * np.cos(pitch_angle) * np.cos(azimuth_angle)
             ty = current_thrust * np.cos(pitch_angle) * np.sin(azimuth_angle)
@@ -416,7 +428,10 @@ with tab2:
             y += vy * dt
             z += vz * dt
             
-            current_twr = current_thrust / (current_mass * gravity) if current_mass > 0 else 0
+            if current_mass > 0:
+                current_twr = current_thrust / (current_mass * gravity)
+            else:
+                current_twr = 0
 
             # Live HUD Update
             if t_step % 5 == 0:
@@ -427,17 +442,31 @@ with tab2:
                 </div>
                 """, unsafe_allow_html=True)
             
+            # Broken down impact condition
             if z <= 0 and t > 5:
-                z = 0; vz = 0; vx = 0; vy = 0
-                if status != "Nominal": status = "CATASTROPHIC SURFACE IMPACT"
+                z = 0
+                vz = 0
+                vx = 0
+                vy = 0
+                if status != "Nominal": 
+                    status = "CATASTROPHIC SURFACE IMPACT"
                 break
                 
-            time_list.append(t); x_list.append(x / 1000); y_list.append(y / 1000); z_list.append(z / 1000)
-            status_list.append(status); mach_list.append(mach); q_list.append(dynamic_pressure)
+            time_list.append(t)
+            x_list.append(x / 1000)
+            y_list.append(y / 1000)
+            z_list.append(z / 1000)
+            status_list.append(status)
+            mach_list.append(mach)
+            q_list.append(dynamic_pressure)
             
         progress_bar.empty()
-        if will_fail: st.error(f"💥 {status_list[-1]} at T+{failure_time}s. Max-Q reached: {max_q/1000:.1f} kPa")
-        else: st.success(f"✨ ORBITAL INSERTION CONFIRMED. Apogee: {z_list[-1]:.2f} km. Max-Q: {max_q/1000:.1f} kPa")
+        
+        # Broken down failure messaging
+        if will_fail: 
+            st.error(f"💥 {status_list[-1]} at T+{failure_time}s. Max-Q reached: {max_q/1000:.1f} kPa")
+        else: 
+            st.success(f"✨ ORBITAL INSERTION CONFIRMED. Apogee: {z_list[-1]:.2f} km. Max-Q: {max_q/1000:.1f} kPa")
         
         sim_df = pd.DataFrame({"Time (s)": time_list, "Downrange (km)": x_list, "Crossrange (km)": y_list, "Altitude (km)": z_list, "Status": status_list, "Mach": mach_list})
         
