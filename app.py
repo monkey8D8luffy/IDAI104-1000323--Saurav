@@ -159,7 +159,10 @@ def load_and_clean_data():
 try:
     data = load_and_clean_data()
 except FileNotFoundError:
-    st.error("⚠️ 'space_missions_dataset.csv' not found.")
+    st.error("⚠️ 'space_missions_dataset.csv' not found. Please place the file in the same folder as app.py.")
+    st.stop()
+except Exception as e:
+    st.error(f"⚠️ Error loading data: {e}")
     st.stop()
 
 VEHICLE_STATS = {
@@ -199,12 +202,15 @@ with tab1:
     st.sidebar.markdown("<h3 style='font-weight:300;'>⎈ Telemetry Filters</h3>", unsafe_allow_html=True)
     selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=["All"] + list(data['Mission Type'].unique()))
     selected_vehicle = st.sidebar.selectbox("Launch Platform", options=["All"] + list(data['Launch Vehicle'].unique()))
-    min_year, max_year = int(data['Launch Year'].min()), int(data['Launch Year'].max())
-    selected_year_range = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
+    
+    if not data.empty and not pd.isna(data['Launch Year'].min()):
+        min_year, max_year = int(data['Launch Year'].min()), int(data['Launch Year'].max())
+        selected_year_range = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
+    else:
+        selected_year_range = (2000, 2050)
 
     filtered_data = data.copy()
     
-    # Broken down multi-line if statements
     if selected_mission_type != "All": 
         filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
         
@@ -306,10 +312,16 @@ with tab2:
     st.markdown("<hr style='margin-top: 10px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 
     if mode == "Dataset Telemetry Profiles":
-        mission_names = data['Mission Name'].tolist()
+        mission_names = data['Mission Name'].tolist() if not data.empty else []
         selected_mission = st.selectbox("Select Mission Telemetry Profile:", mission_names)
         
-        m_data = data[data['Mission Name'] == selected_mission].iloc[0]
+        # Safe filtering to prevent IndexError
+        filtered_mission = data[data['Mission Name'] == selected_mission]
+        if filtered_mission.empty:
+            st.warning("⚠️ Mission data not found. Please ensure the dataset is loaded properly.")
+            st.stop()
+            
+        m_data = filtered_mission.iloc[0]
         vehicle = m_data['Launch Vehicle']
         v_stats = VEHICLE_STATS.get(vehicle, {"mass_kg": 1000000, "thrust_N": 30000000, "drag": 0.4})
         
@@ -335,11 +347,11 @@ with tab2:
 
     # Pre-Launch Calculations (Orbital Mechanics)
     total_initial_mass = init_mass + payload_kg + fuel_kg
-    initial_twr = thrust / (total_initial_mass * 9.81)
+    initial_twr = thrust / (total_initial_mass * 9.81) if total_initial_mass > 0 else 0
     burn_time_est = 120
     mass_flow_rate = fuel_kg / burn_time_est
     exhaust_velocity = thrust / mass_flow_rate if mass_flow_rate > 0 else 0
-    delta_v = exhaust_velocity * np.log(total_initial_mass / (init_mass + payload_kg)) if exhaust_velocity > 0 else 0
+    delta_v = exhaust_velocity * np.log(total_initial_mass / (init_mass + payload_kg)) if exhaust_velocity > 0 and (init_mass + payload_kg) > 0 else 0
 
     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
     col_m1.metric("Launch Platform", vehicle)
@@ -402,23 +414,23 @@ with tab2:
             
             drag_force = 0.5 * drag_coeff * air_density * (v_mag ** 2)
             
-            # Broken down multi-line statements for velocity vectors
             if v_mag > 0:
                 dx = drag_force * (vx / v_mag)
                 dy = drag_force * (vy / v_mag)
                 dz = drag_force * (vz / v_mag)
             else:
-                dx = 0
-                dy = 0
-                dz = 0
+                dx = 0; dy = 0; dz = 0
             
             tx = current_thrust * np.cos(pitch_angle) * np.cos(azimuth_angle)
             ty = current_thrust * np.cos(pitch_angle) * np.sin(azimuth_angle)
             tz = current_thrust * np.sin(pitch_angle)
             
-            ax = (tx - dx) / current_mass
-            ay = (ty - dy) / current_mass
-            az = (tz - dz - current_mass * gravity) / current_mass
+            if current_mass > 0:
+                ax = (tx - dx) / current_mass
+                ay = (ty - dy) / current_mass
+                az = (tz - dz - current_mass * gravity) / current_mass
+            else:
+                ax = 0; ay = 0; az = 0
             
             vx += ax * dt
             vy += ay * dt
@@ -442,14 +454,9 @@ with tab2:
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Broken down impact condition
             if z <= 0 and t > 5:
-                z = 0
-                vz = 0
-                vx = 0
-                vy = 0
-                if status != "Nominal": 
-                    status = "CATASTROPHIC SURFACE IMPACT"
+                z = 0; vz = 0; vx = 0; vy = 0
+                if status != "Nominal": status = "CATASTROPHIC SURFACE IMPACT"
                 break
                 
             time_list.append(t)
@@ -462,7 +469,6 @@ with tab2:
             
         progress_bar.empty()
         
-        # Broken down failure messaging
         if will_fail: 
             st.error(f"💥 {status_list[-1]} at T+{failure_time}s. Max-Q reached: {max_q/1000:.1f} kPa")
         else: 
