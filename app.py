@@ -145,8 +145,11 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. DATA LOADING & PREPROCESSING
+# 3. DATA LOADING & PREPROCESSING (BULLETPROOF)
 # ==========================================
+# Global fallback initialization prevents NameError completely
+data = pd.DataFrame() 
+
 @st.cache_data
 def load_and_clean_data():
     df = pd.read_csv("space_missions_dataset.csv")
@@ -157,15 +160,27 @@ def load_and_clean_data():
                     'Distance from Earth (light-years)', 'Crew Size', 
                     'Mission Success (%)', 'Scientific Yield (points)']
     for col in numeric_cols:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-    df = df.dropna(subset=['Payload Weight (tons)', 'Fuel Consumption (tons)'])
-    df['Outcome Status'] = np.where(df['Mission Success (%)'] >= 80, 'Nominal (Success)', 'Anomaly (Failure)')
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+    
+    # Safe check before dropping
+    if 'Payload Weight (tons)' in df.columns and 'Fuel Consumption (tons)' in df.columns:
+        df = df.dropna(subset=['Payload Weight (tons)', 'Fuel Consumption (tons)'])
+    
+    if 'Mission Success (%)' in df.columns:
+        df['Outcome Status'] = np.where(df['Mission Success (%)'] >= 80, 'Nominal (Success)', 'Anomaly (Failure)')
+    else:
+        df['Outcome Status'] = 'Unknown'
+        
     return df
 
 try:
     data = load_and_clean_data()
 except FileNotFoundError:
-    st.error("⚠️ 'space_missions_dataset.csv' not found. Please ensure it is in the same folder as app.py.")
+    st.error("⚠️ 'space_missions_dataset.csv' not found. Please ensure it is inside the same folder as app.py.")
+    st.stop()
+except Exception as e:
+    st.error(f"⚠️ An error occurred while reading the dataset: {e}. Please ensure you are using the correct file.")
     st.stop()
 
 VEHICLE_STATS = {
@@ -184,109 +199,117 @@ tab1, tab2 = st.tabs(["📊 Mission Data Intelligence", "🚀 Advanced Flight Ph
 
 with tab1:
     st.sidebar.markdown("<h3>⎈ Telemetry Filters</h3>", unsafe_allow_html=True)
-    selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=["All"] + list(data['Mission Type'].unique()))
-    selected_vehicle = st.sidebar.selectbox("Launch Platform", options=["All"] + list(data['Launch Vehicle'].unique()))
     
-    if not data.empty and not pd.isna(data['Launch Year'].min()):
+    # Safe Selectboxes
+    mission_options = ["All"] + list(data['Mission Type'].unique()) if ('Mission Type' in data.columns and not data.empty) else ["All"]
+    vehicle_options = ["All"] + list(data['Launch Vehicle'].unique()) if ('Launch Vehicle' in data.columns and not data.empty) else ["All"]
+    
+    selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=mission_options)
+    selected_vehicle = st.sidebar.selectbox("Launch Platform", options=vehicle_options)
+    
+    if not data.empty and 'Launch Year' in data.columns and not pd.isna(data['Launch Year'].min()):
         min_year, max_year = int(data['Launch Year'].min()), int(data['Launch Year'].max())
         selected_year_range = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
     else:
         selected_year_range = (2000, 2050)
 
     filtered_data = data.copy()
-    if selected_mission_type != "All": 
-        filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
-    if selected_vehicle != "All": 
-        filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
-    filtered_data = filtered_data[(filtered_data['Launch Year'] >= selected_year_range[0]) & (filtered_data['Launch Year'] <= selected_year_range[1])]
+    if not filtered_data.empty:
+        if selected_mission_type != "All": 
+            filtered_data = filtered_data[filtered_data['Mission Type'] == selected_mission_type]
+        if selected_vehicle != "All": 
+            filtered_data = filtered_data[filtered_data['Launch Vehicle'] == selected_vehicle]
+        if 'Launch Year' in filtered_data.columns:
+            filtered_data = filtered_data[(filtered_data['Launch Year'] >= selected_year_range[0]) & (filtered_data['Launch Year'] <= selected_year_range[1])]
 
     st.markdown(f"<div class='glass-card'><h4>📡 Uplink Active: {len(filtered_data)} Records Filtered</h4></div>", unsafe_allow_html=True)
     
-    # --- PART A: EXECUTIVE SUMMARY ---
-    st.markdown("<h2>Macro-Level Launch Metrics</h2>", unsafe_allow_html=True)
-    col_a1, col_a2 = st.columns(2)
-    with col_a1:
-        fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Mass-to-Propellant Ratio & Mission Viability Analysis", color_discrete_map=color_map_status)
-        fig1.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
-        st.plotly_chart(fig1, use_container_width=True)
+    if not filtered_data.empty:
+        # --- PART A: EXECUTIVE SUMMARY ---
+        st.markdown("<h2>Macro-Level Launch Metrics</h2>", unsafe_allow_html=True)
+        col_a1, col_a2 = st.columns(2)
+        with col_a1:
+            fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Mass-to-Propellant Ratio & Mission Viability Analysis", color_discrete_map=color_map_status)
+            fig1.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
+            st.plotly_chart(fig1, use_container_width=True)
 
-    with col_a2:
-        cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
-        fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Aggregate Financial Expenditure by Mission Outcome", color_discrete_map=color_map_status)
-        fig2.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
-        st.plotly_chart(fig2, use_container_width=True)
+        with col_a2:
+            cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
+            fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Aggregate Financial Expenditure by Mission Outcome", color_discrete_map=color_map_status)
+            fig2.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
+            st.plotly_chart(fig2, use_container_width=True)
 
-    col_a3, col_a4 = st.columns(2)
-    with col_a3:
-        line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
-        fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True, title="Orbital Reach: Distance Traveled vs. Operational Duration")
-        fig3.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
-        fig3.update_traces(line_color='#00f2fe', line_width=2)
-        st.plotly_chart(fig3, use_container_width=True)
+        col_a3, col_a4 = st.columns(2)
+        with col_a3:
+            line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
+            fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True, title="Orbital Reach: Distance Traveled vs. Operational Duration")
+            fig3.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
+            fig3.update_traces(line_color='#00f2fe', line_width=2)
+            st.plotly_chart(fig3, use_container_width=True)
 
-    with col_a4:
-        fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', color='Outcome Status', title="Personnel Capacity Distribution Across Mission Status", color_discrete_map=color_map_status)
-        fig4.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
-        st.plotly_chart(fig4, use_container_width=True)
+        with col_a4:
+            fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', color='Outcome Status', title="Personnel Capacity Distribution Across Mission Status", color_discrete_map=color_map_status)
+            fig4.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
+            st.plotly_chart(fig4, use_container_width=True)
 
-    st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-    # --- PART B: CORE STATISTICAL ANALYSIS ---
-    st.markdown("<h2>Core Statistical Distributions (Matplotlib & Seaborn)</h2>", unsafe_allow_html=True)
-    col_s1, col_s2, col_s3 = st.columns(3)
-    
-    with col_s1:
-        fig_m1, ax_m1 = plt.subplots(figsize=(5, 4))
-        fig_m1.patch.set_alpha(0.0)
-        ax_m1.patch.set_alpha(0.0)
-        cost_agg = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].mean()
-        ax_m1.bar(cost_agg.index, cost_agg.values, color=['#FF3366', '#00C853'])
-        ax_m1.set_ylabel("Avg Cost (Billion USD)")
-        ax_m1.set_title("Mean Capital Expenditure", fontsize=10)
-        st.pyplot(fig_m1)
+        # --- PART B: CORE STATISTICAL ANALYSIS ---
+        st.markdown("<h2>Core Statistical Distributions (Matplotlib & Seaborn)</h2>", unsafe_allow_html=True)
+        col_s1, col_s2, col_s3 = st.columns(3)
         
-    with col_s2:
-        fig_s1, ax_s1 = plt.subplots(figsize=(5, 4))
-        fig_s1.patch.set_alpha(0.0)
-        ax_s1.patch.set_alpha(0.0)
-        sns.boxplot(data=filtered_data, x='Outcome Status', y='Crew Size', palette={"Nominal (Success)": "#00C853", "Anomaly (Failure)": "#FF3366"}, ax=ax_s1)
-        ax_s1.set_title("Statistical Dispersion of Crew Configurations", fontsize=10)
-        st.pyplot(fig_s1)
-        
-    with col_s3:
-        fig_s2, ax_s2 = plt.subplots(figsize=(5, 4))
-        fig_s2.patch.set_alpha(0.0)
-        ax_s2.patch.set_alpha(0.0)
-        sns.scatterplot(data=filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', hue='Outcome Status', palette={"Nominal (Success)": "#00C853", "Anomaly (Failure)": "#FF3366"}, ax=ax_s2)
-        ax_s2.set_title("Propellant Consumption vs. Payload Mass", fontsize=10)
-        st.pyplot(fig_s2)
+        with col_s1:
+            fig_m1, ax_m1 = plt.subplots(figsize=(5, 4))
+            fig_m1.patch.set_alpha(0.0)
+            ax_m1.patch.set_alpha(0.0)
+            cost_agg = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].mean()
+            ax_m1.bar(cost_agg.index, cost_agg.values, color=['#FF3366', '#00C853'])
+            ax_m1.set_ylabel("Avg Cost (Billion USD)")
+            ax_m1.set_title("Mean Capital Expenditure", fontsize=10)
+            st.pyplot(fig_m1)
+            
+        with col_s2:
+            fig_s1, ax_s1 = plt.subplots(figsize=(5, 4))
+            fig_s1.patch.set_alpha(0.0)
+            ax_s1.patch.set_alpha(0.0)
+            sns.boxplot(data=filtered_data, x='Outcome Status', y='Crew Size', palette={"Nominal (Success)": "#00C853", "Anomaly (Failure)": "#FF3366"}, ax=ax_s1)
+            ax_s1.set_title("Statistical Dispersion of Crew Configurations", fontsize=10)
+            st.pyplot(fig_s1)
+            
+        with col_s3:
+            fig_s2, ax_s2 = plt.subplots(figsize=(5, 4))
+            fig_s2.patch.set_alpha(0.0)
+            ax_s2.patch.set_alpha(0.0)
+            sns.scatterplot(data=filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', hue='Outcome Status', palette={"Nominal (Success)": "#00C853", "Anomaly (Failure)": "#FF3366"}, ax=ax_s2)
+            ax_s2.set_title("Propellant Consumption vs. Payload Mass", fontsize=10)
+            st.pyplot(fig_s2)
 
-    st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-    # --- PART C: DEEP ORBITAL ANALYTICS ---
-    st.markdown("<h2>Multi-Dimensional Systems Analytics</h2>", unsafe_allow_html=True)
-    fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], title="3D Parameter Space: Interstellar Distance, Fuel Mass, and Payload Limits", color_continuous_scale=px.colors.sequential.Sunsetdark, opacity=0.9)
-    fig_3d.update_layout(
-        template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color),
-        height=700, scene=dict(
-            xaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
-            yaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
-            zaxis=dict(backgroundcolor="rgba(0,0,0,0)")
+        # --- PART C: DEEP ORBITAL ANALYTICS ---
+        st.markdown("<h2>Multi-Dimensional Systems Analytics</h2>", unsafe_allow_html=True)
+        fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], title="3D Parameter Space: Interstellar Distance, Fuel Mass, and Payload Limits", color_continuous_scale=px.colors.sequential.Sunsetdark, opacity=0.9)
+        fig_3d.update_layout(
+            template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color),
+            height=700, scene=dict(
+                xaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
+                yaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
+                zaxis=dict(backgroundcolor="rgba(0,0,0,0)")
+            )
         )
-    )
-    st.plotly_chart(fig_3d, use_container_width=True)
+        st.plotly_chart(fig_3d, use_container_width=True)
 
-    col_b1, col_b2 = st.columns(2)
-    with col_b1:
-        num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 'Distance from Earth (light-years)']]
-        fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='Picnic', origin='lower', title="Pearson Correlation Matrix of Key Mission Telemetry")
-        fig_corr.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), height=500)
-        st.plotly_chart(fig_corr, use_container_width=True)
+        col_b1, col_b2 = st.columns(2)
+        with col_b1:
+            num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 'Distance from Earth (light-years)']]
+            fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='Picnic', origin='lower', title="Pearson Correlation Matrix of Key Mission Telemetry")
+            fig_corr.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), height=500)
+            st.plotly_chart(fig_corr, use_container_width=True)
 
-    with col_b2:
-        fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Plotly3', title="Hierarchical Architecture of Spacecraft & Mission Objectives")
-        fig_sun.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), height=500, margin=dict(t=40, l=0, r=0, b=0))
-        st.plotly_chart(fig_sun, use_container_width=True)
+        with col_b2:
+            fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Plotly3', title="Hierarchical Architecture of Spacecraft & Mission Objectives")
+            fig_sun.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), height=500, margin=dict(t=40, l=0, r=0, b=0))
+            st.plotly_chart(fig_sun, use_container_width=True)
 
 with tab2:
     st.markdown("<div class='glass-card'><h3>⚙️ Advanced 3D Flight Physics Simulator</h3><p>Integrates the Tsiolkovsky rocket equation, dynamic pressure (Max-Q) modeling, and Mach calculations for true-to-life orbital trajectory generation.</p></div>", unsafe_allow_html=True)
@@ -295,25 +318,25 @@ with tab2:
     st.markdown("<hr style='margin-top: 10px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 
     if mode == "Dataset Telemetry Profiles":
-        mission_names = data['Mission Name'].tolist() if not data.empty else []
+        mission_names = data['Mission Name'].tolist() if ('Mission Name' in data.columns and not data.empty) else []
         selected_mission = st.selectbox("Select Mission Telemetry Profile:", mission_names)
         
-        filtered_mission = data[data['Mission Name'] == selected_mission]
-        if filtered_mission.empty:
-            st.warning("⚠️ Mission data not found.")
+        if selected_mission and not data.empty:
+            filtered_mission = data[data['Mission Name'] == selected_mission]
+            m_data = filtered_mission.iloc[0]
+            vehicle = m_data['Launch Vehicle'] if 'Launch Vehicle' in m_data else "Unknown"
+            v_stats = VEHICLE_STATS.get(vehicle, {"mass_kg": 1000000, "thrust_N": 30000000, "drag": 0.4})
+            
+            init_mass = v_stats["mass_kg"]
+            thrust = v_stats["thrust_N"]
+            drag_coeff = v_stats["drag"]
+            payload_kg = m_data['Payload Weight (tons)'] * 1000 if 'Payload Weight (tons)' in m_data else 5000
+            fuel_kg = m_data['Fuel Consumption (tons)'] * 1000 if 'Fuel Consumption (tons)' in m_data else 100000
+            success_chance = m_data['Mission Success (%)'] if 'Mission Success (%)' in m_data else 80
+        else:
+            st.warning("⚠️ No valid mission data to load.")
             st.stop()
             
-        m_data = filtered_mission.iloc[0]
-        vehicle = m_data['Launch Vehicle']
-        v_stats = VEHICLE_STATS.get(vehicle, {"mass_kg": 1000000, "thrust_N": 30000000, "drag": 0.4})
-        
-        init_mass = v_stats["mass_kg"]
-        thrust = v_stats["thrust_N"]
-        drag_coeff = v_stats["drag"]
-        payload_kg = m_data['Payload Weight (tons)'] * 1000
-        fuel_kg = m_data['Fuel Consumption (tons)'] * 1000
-        success_chance = m_data['Mission Success (%)']
-        
     else:
         st.markdown("<h4 style='font-weight: 300;'>🔧 Vehicle Engineering Configuration</h4>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
