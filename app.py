@@ -175,17 +175,6 @@ VEHICLE_STATS = {
     "Ariane 6": {"mass_kg": 800000, "thrust_N": 10000000, "drag": 0.45}
 }
 
-dynamic_template = dict(
-    layout=go.Layout(
-        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color=text_color, family="Inter"),
-        title=dict(font=dict(size=16)),
-        legend=dict(bgcolor='rgba(0,0,0,0)'),
-        xaxis=dict(gridcolor='rgba(128,128,128,0.2)', zerolinecolor='rgba(128,128,128,0.4)'),
-        yaxis=dict(gridcolor='rgba(128,128,128,0.2)', zerolinecolor='rgba(128,128,128,0.4)')
-    )
-)
-
 color_map_status = {"Nominal (Success)": "#00C853", "Anomaly (Failure)": "#FF3366"}
 
 # ==========================================
@@ -218,26 +207,26 @@ with tab1:
     col_a1, col_a2 = st.columns(2)
     with col_a1:
         fig1 = px.scatter(filtered_data, x='Payload Weight (tons)', y='Fuel Consumption (tons)', color='Outcome Status', size='Mission Cost (billion USD)', hover_data=['Mission Name', 'Launch Vehicle'], title="Mass-to-Propellant Ratio & Mission Viability Analysis", color_discrete_map=color_map_status)
-        fig1.update_layout(template=dynamic_template)
+        fig1.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
         st.plotly_chart(fig1, use_container_width=True)
 
     with col_a2:
         cost_df = filtered_data.groupby('Outcome Status')['Mission Cost (billion USD)'].sum().reset_index()
         fig2 = px.bar(cost_df, x='Outcome Status', y='Mission Cost (billion USD)', color='Outcome Status', title="Aggregate Financial Expenditure by Mission Outcome", color_discrete_map=color_map_status)
-        fig2.update_layout(template=dynamic_template)
+        fig2.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
         st.plotly_chart(fig2, use_container_width=True)
 
     col_a3, col_a4 = st.columns(2)
     with col_a3:
         line_data = filtered_data.sort_values(by='Distance from Earth (light-years)')
         fig3 = px.line(line_data, x='Distance from Earth (light-years)', y='Mission Duration (years)', markers=True, title="Orbital Reach: Distance Traveled vs. Operational Duration")
-        fig3.update_layout(template=dynamic_template)
+        fig3.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
         fig3.update_traces(line_color='#00f2fe', line_width=2)
         st.plotly_chart(fig3, use_container_width=True)
 
     with col_a4:
         fig4 = px.box(filtered_data, x='Outcome Status', y='Crew Size', color='Outcome Status', title="Personnel Capacity Distribution Across Mission Status", color_discrete_map=color_map_status)
-        fig4.update_layout(template=dynamic_template)
+        fig4.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
         st.plotly_chart(fig4, use_container_width=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
@@ -277,23 +266,26 @@ with tab1:
     # --- PART C: DEEP ORBITAL ANALYTICS ---
     st.markdown("<h2>Multi-Dimensional Systems Analytics</h2>", unsafe_allow_html=True)
     fig_3d = px.scatter_3d(filtered_data, x='Distance from Earth (light-years)', y='Fuel Consumption (tons)', z='Payload Weight (tons)', color='Mission Success (%)', size='Mission Cost (billion USD)', hover_name='Mission Name', hover_data=['Launch Vehicle', 'Target Name'], title="3D Parameter Space: Interstellar Distance, Fuel Mass, and Payload Limits", color_continuous_scale=px.colors.sequential.Sunsetdark, opacity=0.9)
-    fig_3d.update_layout(template=dynamic_template, height=700, scene=dict(
-        xaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
-        yaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
-        zaxis=dict(backgroundcolor="rgba(0,0,0,0)")
-    ))
+    fig_3d.update_layout(
+        template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color),
+        height=700, scene=dict(
+            xaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
+            yaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
+            zaxis=dict(backgroundcolor="rgba(0,0,0,0)")
+        )
+    )
     st.plotly_chart(fig_3d, use_container_width=True)
 
     col_b1, col_b2 = st.columns(2)
     with col_b1:
         num_df = filtered_data[['Mission Cost (billion USD)', 'Scientific Yield (points)', 'Crew Size', 'Mission Success (%)', 'Fuel Consumption (tons)', 'Payload Weight (tons)', 'Distance from Earth (light-years)']]
         fig_corr = px.imshow(num_df.corr(), text_auto=".2f", aspect="auto", color_continuous_scale='Picnic', origin='lower', title="Pearson Correlation Matrix of Key Mission Telemetry")
-        fig_corr.update_layout(template=dynamic_template, height=500)
+        fig_corr.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), height=500)
         st.plotly_chart(fig_corr, use_container_width=True)
 
     with col_b2:
         fig_sun = px.sunburst(filtered_data, path=['Launch Vehicle', 'Target Type', 'Mission Type'], values='Mission Cost (billion USD)', color='Mission Success (%)', color_continuous_scale='Plotly3', title="Hierarchical Architecture of Spacecraft & Mission Objectives")
-        fig_sun.update_layout(template=dynamic_template, height=500, margin=dict(t=40, l=0, r=0, b=0))
+        fig_sun.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), height=500, margin=dict(t=40, l=0, r=0, b=0))
         st.plotly_chart(fig_sun, use_container_width=True)
 
 with tab2:
@@ -490,11 +482,13 @@ with tab2:
             mode='markers+text', marker=dict(size=8, color=end_color), text=[status_list[-1]], textposition="top center", name="Terminal State"
         ))
 
-        fig_3d_traj.update_layout(template=dynamic_template, height=700, scene=dict(
-            xaxis_title="Downrange (km)", yaxis_title="Crossrange (km)", zaxis_title="Altitude (km)",
-            xaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
-            yaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
-            zaxis=dict(backgroundcolor="rgba(0,0,0,0)")
+        fig_3d_traj.update_layout(
+            template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color),
+            height=700, scene=dict(
+                xaxis_title="Downrange (km)", yaxis_title="Crossrange (km)", zaxis_title="Altitude (km)",
+                xaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
+                yaxis=dict(backgroundcolor="rgba(0,0,0,0)"),
+                zaxis=dict(backgroundcolor="rgba(0,0,0,0)")
         ))
         st.plotly_chart(fig_3d_traj, use_container_width=True)
 
@@ -507,5 +501,5 @@ with tab2:
         marker_colors = np.where(sim_df.iloc[::2, :]['Status'] == "Nominal", "#00C853", "#FF3366")
         fig_anim.update_traces(marker=dict(size=15, symbol="triangle-up", color=marker_colors, line=dict(width=2, color="white")))
         fig_anim.add_trace(go.Scatter(x=sim_df["Downrange (km)"], y=sim_df["Altitude (km)"], mode="lines", line=dict(color="rgba(0, 118, 255, 0.4)", width=2), name="Projected Path"))
-        fig_anim.update_layout(template=dynamic_template, updatemenus=[dict(type="buttons", showactive=False, font=dict(color=text_color))])
+        fig_anim.update_layout(template=chart_template, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color=text_color), updatemenus=[dict(type="buttons", showactive=False, font=dict(color=text_color))])
         st.plotly_chart(fig_anim, use_container_width=True)
