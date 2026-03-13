@@ -1,16 +1,17 @@
 # 🚀 Aerospace Command Terminal: Rocket Launch Path Visualization
 
 **Repository Name:** IDAI104-1000323--Saurav
+
 **Live Streamlit Web App:** https://idai104-1000323--saurav-dds7mwphzyuhupyzghkbws.streamlit.app/
 
----
+
 
 ## 📌 Project Overview
 [cite_start]The Aerospace Command Terminal is an advanced Streamlit cloud web app that focuses on visualizing and comparing different aspects of rocket launches. [cite_start]By combining mathematical flight simulations with historical real-world mission data, the project showcases clear insights into how resources, costs, and outcomes vary across different space missions. 
 
 [cite_start]The primary goal of this web app is to create interactive visualizations that help users—such as engineers and data analysts—easily explore how factors like fuel consumption, payload weight, mission cost, and success rates connect with each other. [cite_start]Additionally, it features a dynamic 3D physics simulator that applies mathematical models covering calculus and differential equations to simulate real aerospace systems.
 
----
+
 
 ## ✨ Key Features & What the App Visualizes
 This application is divided into two core modules:
@@ -27,7 +28,7 @@ A custom-built mathematical simulation engine that calculates rocket trajectorie
 * [cite_start]**Step-by-Step Integration:** At each time step, the loop updates velocity from acceleration and altitude from velocity[cite: 62].
 * **Real-Time 3D Rendering:** Generates a live 3D orbital trajectory path and a 2D ascent profile based on the computed kinematics.
 
----
+
 
 ## ⚙️ Integration Details
 [cite_start]This project integrates several industry-standard Python libraries to process data and render the UI[cite: 184]:
@@ -36,7 +37,7 @@ A custom-built mathematical simulation engine that calculates rocket trajectorie
 * **NumPy:** Powers the numerical integration, logarithmic calculations (Tsiolkovsky rocket equation), and trigonometric vectoring for the 3D physics engine.
 * [cite_start]**Plotly, Matplotlib, & Seaborn:** Integrated to create both highly interactive (hoverable/animated) and mathematically static data visualizations[cite: 82].
 
----
+  
 
 ## 🚀 Deployment Instructions
 
