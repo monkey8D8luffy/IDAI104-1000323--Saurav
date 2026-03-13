@@ -21,606 +21,606 @@ st.markdown("""
 st.markdown("""
 <style>
 /* ============================================
-   ROOT TOKENS & BASE
-   ============================================ */
+ROOT TOKENS & BASE
+============================================ */
 :root {
-    --glass-bg:        rgba(6, 26, 46, 0.55);
-    --glass-border:    rgba(0, 210, 255, 0.18);
-    --glass-glow:      rgba(0, 210, 255, 0.08);
-    --water-primary:   #00d4ff;
-    --water-deep:      #0063a6;
-    --water-surface:   rgba(0, 180, 230, 0.12);
-    --ocean-dark:      #010c18;
-    --ocean-mid:       #021a2e;
-    --ocean-light:     #03283f;
-    --text-primary:    #e8f4f8;
-    --text-secondary:  rgba(180, 220, 240, 0.65);
-    --text-accent:     #00d4ff;
-    --success:         #00ffb3;
-    --danger:          #ff3b6b;
-    --font-display:    'Syne', sans-serif;
-    --font-mono:       'DM Mono', monospace;
-    --blur-amount:     22px;
-    --radius-lg:       20px;
-    --radius-md:       14px;
-    --radius-sm:       8px;
+--glass-bg:        rgba(6, 26, 46, 0.55);
+--glass-border:    rgba(0, 210, 255, 0.18);
+--glass-glow:      rgba(0, 210, 255, 0.08);
+--water-primary:   #00d4ff;
+--water-deep:      #0063a6;
+--water-surface:   rgba(0, 180, 230, 0.12);
+--ocean-dark:      #010c18;
+--ocean-mid:       #021a2e;
+--ocean-light:     #03283f;
+--text-primary:    #e8f4f8;
+--text-secondary:  rgba(180, 220, 240, 0.65);
+--text-accent:     #00d4ff;
+--success:         #00ffb3;
+--danger:          #ff3b6b;
+--font-display:    'Syne', sans-serif;
+--font-mono:       'DM Mono', monospace;
+--blur-amount:     22px;
+--radius-lg:       20px;
+--radius-md:       14px;
+--radius-sm:       8px;
 }
 
 /* ============================================
-   ANIMATED DEEP OCEAN BACKGROUND
-   ============================================ */
+ANIMATED DEEP OCEAN BACKGROUND
+============================================ */
 .stApp {
-    background: var(--ocean-dark);
-    background-image:
-        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(0, 80, 140, 0.35) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 90% 80%, rgba(0, 50, 110, 0.3) 0%, transparent 60%),
-        radial-gradient(ellipse 100% 50% at 50% 50%, rgba(0, 30, 60, 0.8) 0%, transparent 100%);
-    min-height: 100vh;
-    font-family: var(--font-display);
-    overflow-x: hidden;
+background: var(--ocean-dark);
+background-image:
+radial-gradient(ellipse 80% 60% at 10% 20%, rgba(0, 80, 140, 0.35) 0%, transparent 60%),
+radial-gradient(ellipse 60% 80% at 90% 80%, rgba(0, 50, 110, 0.3) 0%, transparent 60%),
+radial-gradient(ellipse 100% 50% at 50% 50%, rgba(0, 30, 60, 0.8) 0%, transparent 100%);
+min-height: 100vh;
+font-family: var(--font-display);
+overflow-x: hidden;
 }
 
 /* Ambient light blobs – morphing slowly */
 .stApp::before {
-    content: '';
-    position: fixed;
-    top: -20%;
-    left: -15%;
-    width: 55%;
-    height: 65%;
-    background: radial-gradient(circle, rgba(0, 140, 210, 0.12) 0%, transparent 70%);
-    border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
-    animation: morphBlob1 14s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
+content: '';
+position: fixed;
+top: -20%;
+left: -15%;
+width: 55%;
+height: 65%;
+background: radial-gradient(circle, rgba(0, 140, 210, 0.12) 0%, transparent 70%);
+border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+animation: morphBlob1 14s ease-in-out infinite alternate;
+pointer-events: none;
+z-index: 0;
 }
 .stApp::after {
-    content: '';
-    position: fixed;
-    bottom: -15%;
-    right: -10%;
-    width: 50%;
-    height: 60%;
-    background: radial-gradient(circle, rgba(0, 80, 160, 0.1) 0%, transparent 70%);
-    border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
-    animation: morphBlob2 18s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
+content: '';
+position: fixed;
+bottom: -15%;
+right: -10%;
+width: 50%;
+height: 60%;
+background: radial-gradient(circle, rgba(0, 80, 160, 0.1) 0%, transparent 70%);
+border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+animation: morphBlob2 18s ease-in-out infinite alternate;
+pointer-events: none;
+z-index: 0;
 }
 
 /* ============================================
-   MORPH KEYFRAMES
-   ============================================ */
+MORPH KEYFRAMES
+============================================ */
 @keyframes morphBlob1 {
-    0%   { border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; transform: translate(0,0) scale(1); }
-    33%  { border-radius: 30% 70% 40% 60% / 40% 50% 60% 40%; transform: translate(3%,2%) scale(1.05); }
-    66%  { border-radius: 50% 50% 60% 40% / 60% 30% 70% 40%; transform: translate(-2%,4%) scale(0.97); }
-    100% { border-radius: 70% 30% 50% 50% / 30% 70% 30% 70%; transform: translate(1%,-2%) scale(1.03); }
+0%   { border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; transform: translate(0,0) scale(1); }
+33%  { border-radius: 30% 70% 40% 60% / 40% 50% 60% 40%; transform: translate(3%,2%) scale(1.05); }
+66%  { border-radius: 50% 50% 60% 40% / 60% 30% 70% 40%; transform: translate(-2%,4%) scale(0.97); }
+100% { border-radius: 70% 30% 50% 50% / 30% 70% 30% 70%; transform: translate(1%,-2%) scale(1.03); }
 }
 @keyframes morphBlob2 {
-    0%   { border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%; transform: translate(0,0) scale(1); }
-    33%  { border-radius: 70% 30% 60% 40% / 40% 60% 40% 60%; transform: translate(-3%,-2%) scale(1.07); }
-    66%  { border-radius: 50% 50% 40% 60% / 50% 50% 50% 50%; transform: translate(2%,-4%) scale(0.95); }
-    100% { border-radius: 30% 70% 70% 30% / 70% 30% 70% 30%; transform: translate(-1%,2%) scale(1.04); }
+0%   { border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%; transform: translate(0,0) scale(1); }
+33%  { border-radius: 70% 30% 60% 40% / 40% 60% 40% 60%; transform: translate(-3%,-2%) scale(1.07); }
+66%  { border-radius: 50% 50% 40% 60% / 50% 50% 50% 50%; transform: translate(2%,-4%) scale(0.95); }
+100% { border-radius: 30% 70% 70% 30% / 70% 30% 70% 30%; transform: translate(-1%,2%) scale(1.04); }
 }
 @keyframes waterFlow {
-    0%   { transform: translateX(-100%) skewX(-10deg); opacity: 0; }
-    20%  { opacity: 1; }
-    80%  { opacity: 0.7; }
-    100% { transform: translateX(110%) skewX(-10deg); opacity: 0; }
+0%   { transform: translateX(-100%) skewX(-10deg); opacity: 0; }
+20%  { opacity: 1; }
+80%  { opacity: 0.7; }
+100% { transform: translateX(110%) skewX(-10deg); opacity: 0; }
 }
 @keyframes waveRise {
-    0%, 100% { transform: translateY(0) scaleY(1); }
-    50%       { transform: translateY(-6px) scaleY(1.08); }
+0%, 100% { transform: translateY(0) scaleY(1); }
+50%       { transform: translateY(-6px) scaleY(1.08); }
 }
 @keyframes ripplePulse {
-    0%   { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(2.8); opacity: 0; }
+0%   { transform: scale(1); opacity: 0.6; }
+100% { transform: scale(2.8); opacity: 0; }
 }
 @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
+0%   { background-position: -200% center; }
+100% { background-position: 200% center; }
 }
 @keyframes glowPulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.15), 0 0 60px rgba(0,212,255,0.05); }
-    50%       { box-shadow: 0 0 35px rgba(0,212,255,0.28), 0 0 80px rgba(0,212,255,0.10); }
+0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.15), 0 0 60px rgba(0,212,255,0.05); }
+50%       { box-shadow: 0 0 35px rgba(0,212,255,0.28), 0 0 80px rgba(0,212,255,0.10); }
 }
 @keyframes floatUp {
-    0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-5px); }
+0%, 100% { transform: translateY(0px); }
+50%       { transform: translateY(-5px); }
 }
 @keyframes scanLine {
-    0%   { top: -2px; opacity: 0.4; }
-    100% { top: 100%; opacity: 0; }
+0%   { top: -2px; opacity: 0.4; }
+100% { top: 100%; opacity: 0; }
 }
 @keyframes liquidMorph {
-    0%,100% { border-radius: 50% 60% 40% 70% / 60% 40% 70% 40%; }
-    25%      { border-radius: 70% 40% 60% 50% / 40% 70% 40% 60%; }
-    50%      { border-radius: 40% 70% 50% 60% / 70% 40% 60% 50%; }
-    75%      { border-radius: 60% 50% 70% 40% / 50% 60% 50% 70%; }
+0%,100% { border-radius: 50% 60% 40% 70% / 60% 40% 70% 40%; }
+25%      { border-radius: 70% 40% 60% 50% / 40% 70% 40% 60%; }
+50%      { border-radius: 40% 70% 50% 60% / 70% 40% 60% 50%; }
+75%      { border-radius: 60% 50% 70% 40% / 50% 60% 50% 70%; }
 }
 @keyframes dropletFall {
-    0%   { transform: translateY(-10px) scale(0.8); opacity: 0; }
-    30%  { opacity: 1; }
-    100% { transform: translateY(300px) scale(1.1); opacity: 0; }
+0%   { transform: translateY(-10px) scale(0.8); opacity: 0; }
+30%  { opacity: 1; }
+100% { transform: translateY(300px) scale(1.1); opacity: 0; }
 }
 
 /* ============================================
-   WATER FLOW STRIP (decorative horizontal)
-   ============================================ */
+WATER FLOW STRIP (decorative horizontal)
+============================================ */
 .water-flow-strip {
-    position: relative;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), rgba(0,212,255,0.8), rgba(0,212,255,0.3), transparent);
-    margin: 30px 0;
-    overflow: hidden;
-    border-radius: 2px;
+position: relative;
+height: 3px;
+background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), rgba(0,212,255,0.8), rgba(0,212,255,0.3), transparent);
+margin: 30px 0;
+overflow: hidden;
+border-radius: 2px;
 }
 .water-flow-strip::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
-    background-size: 200% 100%;
-    animation: shimmer 2.5s linear infinite;
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+background-size: 200% 100%;
+animation: shimmer 2.5s linear infinite;
 }
 
 /* ============================================
-   GLASS CARD SYSTEM
-   ============================================ */
+GLASS CARD SYSTEM
+============================================ */
 .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--blur-amount)) saturate(1.4);
-    -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(1.4);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: 28px 32px;
-    margin-bottom: 22px;
-    position: relative;
-    overflow: hidden;
-    animation: glowPulse 6s ease-in-out infinite;
-    transition: border-color 0.4s ease, transform 0.3s ease;
+background: var(--glass-bg);
+backdrop-filter: blur(var(--blur-amount)) saturate(1.4);
+-webkit-backdrop-filter: blur(var(--blur-amount)) saturate(1.4);
+border: 1px solid var(--glass-border);
+border-radius: var(--radius-lg);
+padding: 28px 32px;
+margin-bottom: 22px;
+position: relative;
+overflow: hidden;
+animation: glowPulse 6s ease-in-out infinite;
+transition: border-color 0.4s ease, transform 0.3s ease;
 }
 .glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.6), transparent);
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(0,212,255,0.6), transparent);
 }
 /* Subtle scan-line effect */
 .glass-card::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    height: 80px;
-    background: linear-gradient(to bottom, transparent, rgba(0,212,255,0.03), transparent);
-    animation: scanLine 8s linear infinite;
-    pointer-events: none;
+content: '';
+position: absolute;
+left: 0; right: 0;
+height: 80px;
+background: linear-gradient(to bottom, transparent, rgba(0,212,255,0.03), transparent);
+animation: scanLine 8s linear infinite;
+pointer-events: none;
 }
 .glass-card:hover {
-    border-color: rgba(0,212,255,0.35);
-    transform: translateY(-2px);
+border-color: rgba(0,212,255,0.35);
+transform: translateY(-2px);
 }
 
 /* Elevated card variant */
 .glass-card-elevated {
-    background: linear-gradient(145deg, rgba(0,60,100,0.45), rgba(0,20,50,0.60));
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(0,212,255,0.25);
-    border-radius: var(--radius-lg);
-    padding: 32px 36px;
-    margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+background: linear-gradient(145deg, rgba(0,60,100,0.45), rgba(0,20,50,0.60));
+backdrop-filter: blur(30px);
+-webkit-backdrop-filter: blur(30px);
+border: 1px solid rgba(0,212,255,0.25);
+border-radius: var(--radius-lg);
+padding: 32px 36px;
+margin-bottom: 24px;
+position: relative;
+overflow: hidden;
+box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 /* ============================================
-   HERO HEADER – WATER MORPHING TITLE
-   ============================================ */
+HERO HEADER – WATER MORPHING TITLE
+============================================ */
 .hero-container {
-    position: relative;
-    text-align: center;
-    padding: 52px 20px 44px;
-    overflow: hidden;
+position: relative;
+text-align: center;
+padding: 52px 20px 44px;
+overflow: hidden;
 }
 .hero-bg-morph {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 200px;
-    background: radial-gradient(ellipse, rgba(0,140,200,0.18) 0%, transparent 70%);
-    animation: liquidMorph 10s ease-in-out infinite;
-    pointer-events: none;
+position: absolute;
+top: 50%; left: 50%;
+transform: translate(-50%, -50%);
+width: 600px;
+height: 200px;
+background: radial-gradient(ellipse, rgba(0,140,200,0.18) 0%, transparent 70%);
+animation: liquidMorph 10s ease-in-out infinite;
+pointer-events: none;
 }
 .hero-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.35em;
-    color: var(--water-primary);
-    text-transform: uppercase;
-    opacity: 0.75;
-    margin-bottom: 14px;
+font-family: var(--font-mono);
+font-size: 0.72rem;
+letter-spacing: 0.35em;
+color: var(--water-primary);
+text-transform: uppercase;
+opacity: 0.75;
+margin-bottom: 14px;
 }
 .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    background: linear-gradient(135deg, #ffffff 0%, #a8dcf0 40%, #00d4ff 70%, #0090cc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    background-size: 200% 200%;
-    animation: shimmer 5s linear infinite;
-    margin-bottom: 10px;
-    line-height: 1.1;
+font-family: var(--font-display);
+font-size: clamp(2.2rem, 5vw, 3.6rem);
+font-weight: 800;
+letter-spacing: -0.01em;
+background: linear-gradient(135deg, #ffffff 0%, #a8dcf0 40%, #00d4ff 70%, #0090cc 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+background-size: 200% 200%;
+animation: shimmer 5s linear infinite;
+margin-bottom: 10px;
+line-height: 1.1;
 }
 .hero-subtitle {
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    letter-spacing: 0.2em;
-    color: var(--text-secondary);
-    text-transform: uppercase;
+font-family: var(--font-mono);
+font-size: 0.82rem;
+letter-spacing: 0.2em;
+color: var(--text-secondary);
+text-transform: uppercase;
 }
 /* Water droplets floating behind hero */
 .droplet {
-    position: absolute;
-    width: 6px;
-    height: 9px;
-    background: radial-gradient(ellipse at 35% 30%, rgba(0,212,255,0.7), rgba(0,100,180,0.3));
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    animation: dropletFall linear infinite;
-    pointer-events: none;
+position: absolute;
+width: 6px;
+height: 9px;
+background: radial-gradient(ellipse at 35% 30%, rgba(0,212,255,0.7), rgba(0,100,180,0.3));
+border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+animation: dropletFall linear infinite;
+pointer-events: none;
 }
 
 /* ============================================
-   TELEMETRY LIVE BOX
-   ============================================ */
+TELEMETRY LIVE BOX
+============================================ */
 .telemetry-box {
-    background: linear-gradient(135deg, rgba(0,30,55,0.9), rgba(0,50,80,0.7));
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(0,212,255,0.22);
-    border-left: 3px solid var(--water-primary);
-    padding: 18px 22px;
-    border-radius: var(--radius-md);
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    line-height: 1.7;
-    margin-bottom: 18px;
-    color: #b0ddf0;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
+background: linear-gradient(135deg, rgba(0,30,55,0.9), rgba(0,50,80,0.7));
+backdrop-filter: blur(18px);
+-webkit-backdrop-filter: blur(18px);
+border: 1px solid rgba(0,212,255,0.22);
+border-left: 3px solid var(--water-primary);
+padding: 18px 22px;
+border-radius: var(--radius-md);
+font-family: var(--font-mono);
+font-size: 0.82rem;
+line-height: 1.7;
+margin-bottom: 18px;
+color: #b0ddf0;
+position: relative;
+overflow: hidden;
+transition: border-color 0.3s;
 }
 .telemetry-box::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0; top: 0;
-    height: 40px;
-    background: linear-gradient(to bottom, rgba(0,212,255,0.04), transparent);
-    animation: scanLine 5s linear infinite;
-    pointer-events: none;
+content: '';
+position: absolute;
+left: 0; right: 0; top: 0;
+height: 40px;
+background: linear-gradient(to bottom, rgba(0,212,255,0.04), transparent);
+animation: scanLine 5s linear infinite;
+pointer-events: none;
 }
 
 /* ============================================
-   SECTION HEADINGS
-   ============================================ */
+SECTION HEADINGS
+============================================ */
 h1, h2, h3, h4 {
-    font-family: var(--font-display) !important;
-    color: var(--text-primary) !important;
+font-family: var(--font-display) !important;
+color: var(--text-primary) !important;
 }
 h2 {
-    font-size: 1.35rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.04em !important;
-    margin-bottom: 18px !important;
-    position: relative;
-    display: inline-block;
+font-size: 1.35rem !important;
+font-weight: 700 !important;
+letter-spacing: 0.04em !important;
+margin-bottom: 18px !important;
+position: relative;
+display: inline-block;
 }
 h2::after {
-    content: '';
-    display: block;
-    height: 2px;
-    width: 100%;
-    background: linear-gradient(90deg, var(--water-primary), transparent);
-    margin-top: 5px;
-    border-radius: 1px;
-    animation: waveRise 3s ease-in-out infinite;
+content: '';
+display: block;
+height: 2px;
+width: 100%;
+background: linear-gradient(90deg, var(--water-primary), transparent);
+margin-top: 5px;
+border-radius: 1px;
+animation: waveRise 3s ease-in-out infinite;
 }
 h3 { font-size: 1.1rem !important; color: rgba(180,220,240,0.9) !important; }
 
 /* ============================================
-   SIDEBAR – FROSTED GLASS PANEL
-   ============================================ */
+SIDEBAR – FROSTED GLASS PANEL
+============================================ */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, rgba(2,16,30,0.85) 0%, rgba(1,12,25,0.95) 100%) !important;
-    backdrop-filter: blur(30px) !important;
-    -webkit-backdrop-filter: blur(30px) !important;
-    border-right: 1px solid rgba(0,212,255,0.12) !important;
+background: linear-gradient(180deg, rgba(2,16,30,0.85) 0%, rgba(1,12,25,0.95) 100%) !important;
+backdrop-filter: blur(30px) !important;
+-webkit-backdrop-filter: blur(30px) !important;
+border-right: 1px solid rgba(0,212,255,0.12) !important;
 }
 [data-testid="stSidebar"]::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 180px;
-    background: radial-gradient(ellipse at 50% 0%, rgba(0,120,200,0.12), transparent);
-    pointer-events: none;
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 180px;
+background: radial-gradient(ellipse at 50% 0%, rgba(0,120,200,0.12), transparent);
+pointer-events: none;
 }
 
 /* ============================================
-   TABS – WATER SURFACE STYLE
-   ============================================ */
+TABS – WATER SURFACE STYLE
+============================================ */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-    background: rgba(0,20,40,0.5);
-    border-radius: 14px;
-    padding: 6px;
-    border: 1px solid rgba(0,212,255,0.1);
-    backdrop-filter: blur(16px);
+gap: 8px;
+background: rgba(0,20,40,0.5);
+border-radius: 14px;
+padding: 6px;
+border: 1px solid rgba(0,212,255,0.1);
+backdrop-filter: blur(16px);
 }
 .stTabs [data-baseweb="tab"] {
-    background: transparent;
-    border: none !important;
-    border-radius: 10px !important;
-    padding: 10px 28px;
-    font-family: var(--font-display);
-    font-size: 0.88rem;
-    letter-spacing: 0.04em;
-    color: var(--text-secondary) !important;
-    transition: all 0.35s ease;
+background: transparent;
+border: none !important;
+border-radius: 10px !important;
+padding: 10px 28px;
+font-family: var(--font-display);
+font-size: 0.88rem;
+letter-spacing: 0.04em;
+color: var(--text-secondary) !important;
+transition: all 0.35s ease;
 }
 .stTabs [data-baseweb="tab"][aria-selected="true"] {
-    background: linear-gradient(135deg, rgba(0,140,210,0.28), rgba(0,80,140,0.35)) !important;
-    border: 1px solid rgba(0,212,255,0.35) !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 20px rgba(0,212,255,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+background: linear-gradient(135deg, rgba(0,140,210,0.28), rgba(0,80,140,0.35)) !important;
+border: 1px solid rgba(0,212,255,0.35) !important;
+color: #ffffff !important;
+box-shadow: 0 0 20px rgba(0,212,255,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
 /* ============================================
-   METRIC TILES – LIQUID GLASS
-   ============================================ */
+METRIC TILES – LIQUID GLASS
+============================================ */
 [data-testid="stMetric"] {
-    background: linear-gradient(145deg, rgba(0,50,90,0.45), rgba(0,25,55,0.6));
-    border: 1px solid rgba(0,212,255,0.18);
-    border-radius: var(--radius-md);
-    padding: 18px 20px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    animation: floatUp 5s ease-in-out infinite;
+background: linear-gradient(145deg, rgba(0,50,90,0.45), rgba(0,25,55,0.6));
+border: 1px solid rgba(0,212,255,0.18);
+border-radius: var(--radius-md);
+padding: 18px 20px;
+transition: all 0.3s ease;
+position: relative;
+overflow: hidden;
+animation: floatUp 5s ease-in-out infinite;
 }
 [data-testid="stMetric"]:nth-child(2) { animation-delay: 0.5s; }
 [data-testid="stMetric"]:nth-child(3) { animation-delay: 1s; }
 [data-testid="stMetric"]:nth-child(4) { animation-delay: 1.5s; }
 [data-testid="stMetric"]::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
 }
 [data-testid="stMetric"]:hover {
-    border-color: rgba(0,212,255,0.4);
-    box-shadow: 0 8px 30px rgba(0,212,255,0.12);
-    transform: translateY(-2px);
+border-color: rgba(0,212,255,0.4);
+box-shadow: 0 8px 30px rgba(0,212,255,0.12);
+transform: translateY(-2px);
 }
 [data-testid="stMetricLabel"] { color: var(--text-secondary) !important; font-family: var(--font-mono) !important; font-size: 0.72rem !important; letter-spacing: 0.12em !important; }
 [data-testid="stMetricValue"] { color: var(--text-accent) !important; font-family: var(--font-display) !important; font-weight: 700 !important; }
 
 /* ============================================
-   BUTTONS
-   ============================================ */
+BUTTONS
+============================================ */
 .stButton > button {
-    background: linear-gradient(135deg, rgba(0,100,180,0.5), rgba(0,50,110,0.7)) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(0,212,255,0.4) !important;
-    border-radius: 12px !important;
-    font-family: var(--font-display) !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.12em !important;
-    font-size: 0.85rem !important;
-    padding: 14px 28px !important;
-    transition: all 0.35s cubic-bezier(0.23,1,0.32,1) !important;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(12px);
+background: linear-gradient(135deg, rgba(0,100,180,0.5), rgba(0,50,110,0.7)) !important;
+color: #ffffff !important;
+border: 1px solid rgba(0,212,255,0.4) !important;
+border-radius: 12px !important;
+font-family: var(--font-display) !important;
+font-weight: 600 !important;
+letter-spacing: 0.12em !important;
+font-size: 0.85rem !important;
+padding: 14px 28px !important;
+transition: all 0.35s cubic-bezier(0.23,1,0.32,1) !important;
+position: relative;
+overflow: hidden;
+backdrop-filter: blur(12px);
 }
 .stButton > button::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-    transition: left 0.5s ease;
+content: '';
+position: absolute;
+top: 0; left: -100%;
+width: 100%; height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+transition: left 0.5s ease;
 }
 .stButton > button:hover::after { left: 100%; }
 .stButton > button:hover {
-    background: linear-gradient(135deg, rgba(0,140,220,0.6), rgba(0,80,160,0.8)) !important;
-    border-color: rgba(0,212,255,0.7) !important;
-    box-shadow: 0 0 30px rgba(0,212,255,0.3), 0 8px 24px rgba(0,0,0,0.4) !important;
-    transform: translateY(-2px) !important;
+background: linear-gradient(135deg, rgba(0,140,220,0.6), rgba(0,80,160,0.8)) !important;
+border-color: rgba(0,212,255,0.7) !important;
+box-shadow: 0 0 30px rgba(0,212,255,0.3), 0 8px 24px rgba(0,0,0,0.4) !important;
+transform: translateY(-2px) !important;
 }
 .stButton > button:active { transform: translateY(0px) !important; }
 
 /* ============================================
-   SELECT / SLIDER / RADIO / INPUT CONTROLS
-   ============================================ */
+SELECT / SLIDER / RADIO / INPUT CONTROLS
+============================================ */
 .stSelectbox > div > div,
 .stNumberInput > div > div {
-    background: rgba(0,25,50,0.7) !important;
-    border: 1px solid rgba(0,212,255,0.2) !important;
-    border-radius: var(--radius-sm) !important;
-    color: var(--text-primary) !important;
-    font-family: var(--font-mono) !important;
-    backdrop-filter: blur(12px) !important;
-    transition: border-color 0.3s !important;
+background: rgba(0,25,50,0.7) !important;
+border: 1px solid rgba(0,212,255,0.2) !important;
+border-radius: var(--radius-sm) !important;
+color: var(--text-primary) !important;
+font-family: var(--font-mono) !important;
+backdrop-filter: blur(12px) !important;
+transition: border-color 0.3s !important;
 }
 .stSelectbox > div > div:hover,
 .stNumberInput > div > div:hover {
-    border-color: rgba(0,212,255,0.45) !important;
+border-color: rgba(0,212,255,0.45) !important;
 }
 .stSlider [data-baseweb="slider"] {
-    margin-top: 8px;
+margin-top: 8px;
 }
 .stRadio > div {
-    background: rgba(0,20,45,0.5);
-    border: 1px solid rgba(0,212,255,0.12);
-    border-radius: 10px;
-    padding: 8px 12px;
-    backdrop-filter: blur(10px);
+background: rgba(0,20,45,0.5);
+border: 1px solid rgba(0,212,255,0.12);
+border-radius: 10px;
+padding: 8px 12px;
+backdrop-filter: blur(10px);
 }
 
 /* ============================================
-   PROGRESS BAR
-   ============================================ */
+PROGRESS BAR
+============================================ */
 .stProgress > div > div > div {
-    background: linear-gradient(90deg, var(--water-deep), var(--water-primary)) !important;
-    border-radius: 4px;
-    animation: shimmer 2s linear infinite;
-    background-size: 200% 100%;
+background: linear-gradient(90deg, var(--water-deep), var(--water-primary)) !important;
+border-radius: 4px;
+animation: shimmer 2s linear infinite;
+background-size: 200% 100%;
 }
 .stProgress > div > div {
-    background: rgba(0,30,60,0.6) !important;
-    border-radius: 4px;
+background: rgba(0,30,60,0.6) !important;
+border-radius: 4px;
 }
 
 /* ============================================
-   ALERT / SUCCESS / ERROR BOXES
-   ============================================ */
+ALERT / SUCCESS / ERROR BOXES
+============================================ */
 .stSuccess, [data-testid="stAlertContainer"][data-type="success"] {
-    background: rgba(0,255,179,0.07) !important;
-    border: 1px solid rgba(0,255,179,0.3) !important;
-    border-radius: var(--radius-md) !important;
-    font-family: var(--font-mono) !important;
-    color: #00ffb3 !important;
+background: rgba(0,255,179,0.07) !important;
+border: 1px solid rgba(0,255,179,0.3) !important;
+border-radius: var(--radius-md) !important;
+font-family: var(--font-mono) !important;
+color: #00ffb3 !important;
 }
 .stError, [data-testid="stAlertContainer"][data-type="error"] {
-    background: rgba(255,59,107,0.07) !important;
-    border: 1px solid rgba(255,59,107,0.3) !important;
-    border-radius: var(--radius-md) !important;
-    font-family: var(--font-mono) !important;
-    color: #ff5580 !important;
+background: rgba(255,59,107,0.07) !important;
+border: 1px solid rgba(255,59,107,0.3) !important;
+border-radius: var(--radius-md) !important;
+font-family: var(--font-mono) !important;
+color: #ff5580 !important;
 }
 
 /* ============================================
-   DIVIDER / HR
-   ============================================ */
+DIVIDER / HR
+============================================ */
 hr {
-    border: none !important;
-    height: 1px !important;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.25) 30%, rgba(0,212,255,0.5) 50%, rgba(0,212,255,0.25) 70%, transparent) !important;
-    margin: 40px 0 !important;
-    position: relative;
+border: none !important;
+height: 1px !important;
+background: linear-gradient(90deg, transparent, rgba(0,212,255,0.25) 30%, rgba(0,212,255,0.5) 50%, rgba(0,212,255,0.25) 70%, transparent) !important;
+margin: 40px 0 !important;
+position: relative;
 }
 
 /* ============================================
-   GENERAL TEXT
-   ============================================ */
+GENERAL TEXT
+============================================ */
 p, span, div, label { color: var(--text-primary); font-family: var(--font-display); }
 .stMarkdown p { color: var(--text-secondary) !important; line-height: 1.7; }
 
 /* ============================================
-   SCROLLBAR
-   ============================================ */
+SCROLLBAR
+============================================ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: rgba(0,10,25,0.8); }
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(var(--water-deep), var(--water-primary));
-    border-radius: 3px;
+background: linear-gradient(var(--water-deep), var(--water-primary));
+border-radius: 3px;
 }
 
 /* ============================================
-   STATUS BADGE UTILITY
-   ============================================ */
+STATUS BADGE UTILITY
+============================================ */
 .status-nominal {
-    display: inline-block;
-    background: rgba(0,255,179,0.12);
-    color: #00ffb3;
-    border: 1px solid rgba(0,255,179,0.35);
-    border-radius: 20px;
-    padding: 2px 12px;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
+display: inline-block;
+background: rgba(0,255,179,0.12);
+color: #00ffb3;
+border: 1px solid rgba(0,255,179,0.35);
+border-radius: 20px;
+padding: 2px 12px;
+font-family: var(--font-mono);
+font-size: 0.78rem;
+letter-spacing: 0.08em;
 }
 .status-anomaly {
-    display: inline-block;
-    background: rgba(255,59,107,0.12);
-    color: #ff5580;
-    border: 1px solid rgba(255,59,107,0.35);
-    border-radius: 20px;
-    padding: 2px 12px;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
+display: inline-block;
+background: rgba(255,59,107,0.12);
+color: #ff5580;
+border: 1px solid rgba(255,59,107,0.35);
+border-radius: 20px;
+padding: 2px 12px;
+font-family: var(--font-mono);
+font-size: 0.78rem;
+letter-spacing: 0.08em;
 }
 /* Pulsing dot for live telemetry */
 .live-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    background: #00ffb3;
-    border-radius: 50%;
-    margin-right: 8px;
-    box-shadow: 0 0 8px #00ffb3;
-    animation: ripplePulse 1.8s ease-out infinite;
+display: inline-block;
+width: 8px; height: 8px;
+background: #00ffb3;
+border-radius: 50%;
+margin-right: 8px;
+box-shadow: 0 0 8px #00ffb3;
+animation: ripplePulse 1.8s ease-out infinite;
 }
 
 /* ============================================
-   WATER FLOW ANIMATION ELEMENT
-   ============================================ */
+WATER FLOW ANIMATION ELEMENT
+============================================ */
 .water-flow-anim {
-    position: relative;
-    height: 2px;
-    margin: 24px 0;
-    overflow: hidden;
-    border-radius: 2px;
-    background: rgba(0,212,255,0.06);
+position: relative;
+height: 2px;
+margin: 24px 0;
+overflow: hidden;
+border-radius: 2px;
+background: rgba(0,212,255,0.06);
 }
 .water-flow-anim span {
-    position: absolute;
-    top: 0; left: 0;
-    height: 100%;
-    width: 60%;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.6), rgba(180,240,255,0.9), rgba(0,212,255,0.6), transparent);
-    border-radius: 2px;
-    animation: waterFlow 2.8s ease-in-out infinite;
+position: absolute;
+top: 0; left: 0;
+height: 100%;
+width: 60%;
+background: linear-gradient(90deg, transparent, rgba(0,212,255,0.6), rgba(180,240,255,0.9), rgba(0,212,255,0.6), transparent);
+border-radius: 2px;
+animation: waterFlow 2.8s ease-in-out infinite;
 }
 .water-flow-anim span:nth-child(2) { animation-delay: 0.9s; opacity: 0.6; }
 .water-flow-anim span:nth-child(3) { animation-delay: 1.8s; opacity: 0.4; }
 
 /* ============================================
-   MORPH DECORATION BLOB (inline HTML usage)
-   ============================================ */
+MORPH DECORATION BLOB (inline HTML usage)
+============================================ */
 .morph-blob {
-    display: inline-block;
-    width: 180px; height: 180px;
-    background: radial-gradient(circle at 40% 35%, rgba(0,180,230,0.18), rgba(0,50,120,0.08) 70%);
-    border: 1px solid rgba(0,212,255,0.14);
-    animation: liquidMorph 9s ease-in-out infinite;
-    pointer-events: none;
-    position: absolute;
+display: inline-block;
+width: 180px; height: 180px;
+background: radial-gradient(circle at 40% 35%, rgba(0,180,230,0.18), rgba(0,50,120,0.08) 70%);
+border: 1px solid rgba(0,212,255,0.14);
+animation: liquidMorph 9s ease-in-out infinite;
+pointer-events: none;
+position: absolute;
 }
 
 /* ============================================
-   SECTION LABEL CHIP
-   ============================================ */
+SECTION LABEL CHIP
+============================================ */
 .section-chip {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.25em;
-    color: var(--water-primary);
-    background: rgba(0,212,255,0.08);
-    border: 1px solid rgba(0,212,255,0.2);
-    border-radius: 20px;
-    padding: 3px 14px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
+display: inline-block;
+font-family: var(--font-mono);
+font-size: 0.68rem;
+letter-spacing: 0.25em;
+color: var(--water-primary);
+background: rgba(0,212,255,0.08);
+border: 1px solid rgba(0,212,255,0.2);
+border-radius: 20px;
+padding: 3px 14px;
+margin-bottom: 10px;
+text-transform: uppercase;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -631,22 +631,22 @@ p, span, div, label { color: var(--text-primary); font-family: var(--font-displa
 # ==========================================
 st.markdown("""
 <div class="glass-card-elevated hero-container">
-    <div class="hero-bg-morph"></div>
+<div class="hero-bg-morph"></div>
 
-    <!-- water droplets -->
-    <div class="droplet" style="left:8%;  top:10%; animation-duration:5.5s; animation-delay:0s;   opacity:0.6;"></div>
-    <div class="droplet" style="left:18%; top:5%;  animation-duration:7s;   animation-delay:1.2s; opacity:0.4;"></div>
-    <div class="droplet" style="left:75%; top:8%;  animation-duration:6.2s; animation-delay:0.6s; opacity:0.5;"></div>
-    <div class="droplet" style="left:88%; top:15%; animation-duration:4.8s; animation-delay:2s;   opacity:0.35;"></div>
-    <div class="droplet" style="left:55%; top:3%;  animation-duration:8s;   animation-delay:0.3s; opacity:0.3;"></div>
 
-    <div class="hero-eyebrow">⬡ &nbsp; ASTRA ORBITAL SYSTEMS &nbsp; ⬡</div>
-    <div class="hero-title">AEROSPACE COMMAND TERMINAL</div>
-    <div class="hero-subtitle">Orbital Telemetry &nbsp;·&nbsp; Predictive Analytics &nbsp;·&nbsp; Flight Simulation</div>
+<div class="droplet" style="left:8%;  top:10%; animation-duration:5.5s; animation-delay:0s;   opacity:0.6;"></div>
+<div class="droplet" style="left:18%; top:5%;  animation-duration:7s;   animation-delay:1.2s; opacity:0.4;"></div>
+<div class="droplet" style="left:75%; top:8%;  animation-duration:6.2s; animation-delay:0.6s; opacity:0.5;"></div>
+<div class="droplet" style="left:88%; top:15%; animation-duration:4.8s; animation-delay:2s;   opacity:0.35;"></div>
+<div class="droplet" style="left:55%; top:3%;  animation-duration:8s;   animation-delay:0.3s; opacity:0.3;"></div>
 
-    <div class="water-flow-anim" style="width:55%; margin:22px auto 0;">
-        <span></span><span></span><span></span>
-    </div>
+<div class="hero-eyebrow">⬡ &nbsp; ASTRA ORBITAL SYSTEMS &nbsp; ⬡</div>
+<div class="hero-title">AEROSPACE COMMAND TERMINAL</div>
+<div class="hero-subtitle">Orbital Telemetry &nbsp;·&nbsp; Predictive Analytics &nbsp;·&nbsp; Flight Simulation</div>
+
+<div class="water-flow-anim" style="width:55%; margin:22px auto 0;">
+<span></span><span></span><span></span>
+</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -727,10 +727,10 @@ with tab1:
 
     # Sidebar
     st.sidebar.markdown("""
-    <div style="text-align:center; padding: 18px 0 10px;">
-        <div class="section-chip">⎈ TELEMETRY FILTERS</div>
-    </div>
-    """, unsafe_allow_html=True)
+<div style="text-align:center; padding: 18px 0 10px;">
+<div class="section-chip">⎈ TELEMETRY FILTERS</div>
+</div>
+""", unsafe_allow_html=True)
 
     selected_mission_type = st.sidebar.selectbox("Mission Architecture", options=["All"] + list(data['Mission Type'].unique()))
     selected_vehicle      = st.sidebar.selectbox("Launch Platform",      options=["All"] + list(data['Launch Vehicle'].unique()))
@@ -738,10 +738,10 @@ with tab1:
     selected_year_range   = st.sidebar.slider("Operational Window (Years)", min_year, max_year, (min_year, max_year))
 
     st.sidebar.markdown("""
-    <div class="water-flow-anim" style="margin-top:18px;">
-        <span></span><span></span><span></span>
-    </div>
-    """, unsafe_allow_html=True)
+<div class="water-flow-anim" style="margin-top:18px;">
+<span></span><span></span><span></span>
+</div>
+""", unsafe_allow_html=True)
 
     filtered_data = data.copy()
     if selected_mission_type != "All":
@@ -755,13 +755,13 @@ with tab1:
 
     # Uplink status
     st.markdown(f"""
-    <div class="glass-card" style="padding: 16px 24px; display: flex; align-items: center; gap: 12px;">
-        <span class="live-dot"></span>
-        <span style="font-family:var(--font-mono); font-size:0.82rem; color:#a8cfe0;">
-            UPLINK ACTIVE &nbsp;·&nbsp; <strong style="color:#00d4ff;">{len(filtered_data)}</strong> TELEMETRY RECORDS FILTERED
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
+<div class="glass-card" style="padding: 16px 24px; display: flex; align-items: center; gap: 12px;">
+<span class="live-dot"></span>
+<span style="font-family:var(--font-mono); font-size:0.82rem; color:#a8cfe0;">
+UPLINK ACTIVE &nbsp;·&nbsp; <strong style="color:#00d4ff;">{len(filtered_data)}</strong> TELEMETRY RECORDS FILTERED
+</span>
+</div>
+""", unsafe_allow_html=True)
 
     # --- SECTION A: MACRO METRICS ---
     st.markdown('<div class="section-chip">01 / MACRO-LEVEL ANALYTICS</div>', unsafe_allow_html=True)
@@ -812,8 +812,8 @@ with tab1:
 
     # Water-flow divider
     st.markdown("""
-    <div class="water-flow-anim"><span></span><span></span><span></span></div>
-    """, unsafe_allow_html=True)
+<div class="water-flow-anim"><span></span><span></span><span></span></div>
+""", unsafe_allow_html=True)
 
     # --- SECTION B: STATISTICAL DISTRIBUTIONS ---
     st.markdown('<div class="section-chip">02 / STATISTICAL DISTRIBUTIONS</div>', unsafe_allow_html=True)
@@ -864,8 +864,8 @@ with tab1:
 
     # Water-flow divider
     st.markdown("""
-    <div class="water-flow-anim"><span></span><span></span><span></span></div>
-    """, unsafe_allow_html=True)
+<div class="water-flow-anim"><span></span><span></span><span></span></div>
+""", unsafe_allow_html=True)
 
     # --- SECTION C: DEEP ORBITAL ANALYTICS ---
     st.markdown('<div class="section-chip">03 / DEEP ORBITAL ANALYTICS</div>', unsafe_allow_html=True)
@@ -921,17 +921,17 @@ with tab1:
 with tab2:
 
     st.markdown("""
-    <div class="glass-card-elevated">
-        <div class="section-chip">FLIGHT SIMULATION ENGINE</div>
-        <h3 style="margin-top:10px; margin-bottom:6px;">⚙️ Advanced 3D Flight Physics Simulator</h3>
-        <p style="font-family:var(--font-mono); font-size:0.8rem; color:rgba(160,210,230,0.7); line-height:1.7;">
-            Integrates the <strong style="color:#00d4ff;">Tsiolkovsky rocket equation</strong>,
-            dynamic pressure (Max-Q) modelling, and Mach calculations
-            for true-to-life orbital trajectory generation.
-        </p>
-        <div class="water-flow-anim" style="margin-top:16px;"><span></span><span></span><span></span></div>
-    </div>
-    """, unsafe_allow_html=True)
+<div class="glass-card-elevated">
+<div class="section-chip">FLIGHT SIMULATION ENGINE</div>
+<h3 style="margin-top:10px; margin-bottom:6px;">⚙️ Advanced 3D Flight Physics Simulator</h3>
+<p style="font-family:var(--font-mono); font-size:0.8rem; color:rgba(160,210,230,0.7); line-height:1.7;">
+Integrates the <strong style="color:#00d4ff;">Tsiolkovsky rocket equation</strong>,
+dynamic pressure (Max-Q) modelling, and Mach calculations
+for true-to-life orbital trajectory generation.
+</p>
+<div class="water-flow-anim" style="margin-top:16px;"><span></span><span></span><span></span></div>
+</div>
+""", unsafe_allow_html=True)
 
     mode = st.radio(
         "⚙️ Simulation Mode:",
@@ -940,8 +940,8 @@ with tab2:
     )
 
     st.markdown("""
-    <div class="water-flow-anim"><span></span><span></span><span></span></div>
-    """, unsafe_allow_html=True)
+<div class="water-flow-anim"><span></span><span></span><span></span></div>
+""", unsafe_allow_html=True)
 
     # --- DATASET PROFILE MODE ---
     if mode == "Dataset Telemetry Profiles":
@@ -982,7 +982,9 @@ with tab2:
     delta_v            = exhaust_velocity * np.log(total_initial_mass / (init_mass + payload_kg)) if exhaust_velocity > 0 else 0
 
     # Metrics row
-    st.markdown("""<div class="water-flow-anim"><span></span><span></span><span></span></div>""", unsafe_allow_html=True)
+    st.markdown("""
+<div class="water-flow-anim"><span></span><span></span><span></span></div>
+""", unsafe_allow_html=True)
     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
     col_m1.metric("Launch Platform",       vehicle)
     col_m2.metric("Total Lift-off Mass",   f"{total_initial_mass:,.0f} kg")
@@ -1110,8 +1112,8 @@ with tab2:
 
         # --- 3D TRAJECTORY ---
         st.markdown("""
-        <div class="section-chip" style="margin-top:24px;">🛰️ 3D KINEMATIC TRAJECTORY</div>
-        """, unsafe_allow_html=True)
+<div class="section-chip" style="margin-top:24px;">🛰️ 3D KINEMATIC TRAJECTORY</div>
+""", unsafe_allow_html=True)
         st.markdown("<h2>Spatial Flight Path Visualisation</h2>", unsafe_allow_html=True)
 
         fig_3d_traj = go.Figure()
@@ -1151,8 +1153,8 @@ with tab2:
 
         # --- 2D ASCENT PROFILE ---
         st.markdown("""
-        <div class="section-chip">📺 2D ASCENT PROFILE</div>
-        """, unsafe_allow_html=True)
+<div class="section-chip">📺 2D ASCENT PROFILE</div>
+""", unsafe_allow_html=True)
         st.markdown("<h2>Cross-Sectional Trajectory Animation</h2>", unsafe_allow_html=True)
 
         sub_df     = sim_df.iloc[::2, :].copy()
