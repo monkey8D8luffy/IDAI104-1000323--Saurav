@@ -1123,12 +1123,37 @@ for true-to-life orbital trajectory generation.
             y=np.linspace(0, max(y_list) * 1.2, 5),
             colorscale='Greens', opacity=0.08, showscale=False, name="Ground Plane"
         ))
+        mach_vals = sim_df['Mach'].tolist()
+        # Solid path line (single colour, always compatible)
         fig_3d_traj.add_trace(go.Scatter3d(
-            x=sim_df["Downrange (km)"], y=sim_df["Crossrange (km)"], z=sim_df["Altitude (km)"],
+            x=sim_df["Downrange (km)"].tolist(),
+            y=sim_df["Crossrange (km)"].tolist(),
+            z=sim_df["Altitude (km)"].tolist(),
             mode='lines',
-            line=dict(color=sim_df['Mach'], colorscale='Plasma', width=5, showscale=True,
-                      colorbar=dict(title="Mach", titlefont=dict(color='#00d4ff'), tickfont=dict(color='#a8cfe0'))),
-            name="Flight Path"
+            line=dict(color='rgba(0,212,255,0.5)', width=4),
+            name="Flight Path",
+            showlegend=True
+        ))
+        # Invisible markers carrying the Mach colour + colorbar
+        fig_3d_traj.add_trace(go.Scatter3d(
+            x=sim_df["Downrange (km)"].tolist(),
+            y=sim_df["Crossrange (km)"].tolist(),
+            z=sim_df["Altitude (km)"].tolist(),
+            mode='markers',
+            marker=dict(
+                size=3,
+                color=mach_vals,
+                colorscale='Plasma',
+                showscale=True,
+                colorbar=dict(
+                    title=dict(text="Mach", font=dict(color='#00d4ff')),
+                    tickfont=dict(color='#a8cfe0'),
+                    x=1.02
+                ),
+                opacity=0.85
+            ),
+            name="Mach Profile",
+            showlegend=False
         ))
         end_color = "#ff3b6b" if will_fail else "#00ffb3"
         fig_3d_traj.add_trace(go.Scatter3d(
