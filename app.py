@@ -7,17 +7,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 
-# ==========================================
-# 1. PAGE CONFIGURATION & GLASS OS THEME
-# ==========================================
+
 st.set_page_config(page_title="⬡ ASTRA // Orbital Intelligence", layout="wide", page_icon="⬡")
 
-# --- LOAD GOOGLE FONTS ---
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Syne+Mono&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
 
-# --- MASTER CSS: GLASS OS + WATER FLOW + MORPH ---
 st.markdown("""
 <style>
 /* ============================================
@@ -626,9 +622,7 @@ text-transform: uppercase;
 """, unsafe_allow_html=True)
 
 
-# ==========================================
-# HERO HEADER
-# ==========================================
+
 st.markdown("""
 <div class="glass-card-elevated hero-container">
 <div class="hero-bg-morph"></div>
@@ -651,9 +645,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ==========================================
-# 2. DATA LOADING & PREPROCESSING
-# ==========================================
+
 @st.cache_data
 def load_and_clean_data():
     df = pd.read_csv("space_missions_dataset.csv")
@@ -682,9 +674,7 @@ VEHICLE_STATS = {
     "Ariane 6":      {"mass_kg": 800000,  "thrust_N": 10000000, "drag": 0.45}
 }
 
-# ==========================================
-# CHART THEME
-# ==========================================
+
 cyber_template = dict(
     layout=go.Layout(
         plot_bgcolor='rgba(0,0,0,0)',
@@ -713,16 +703,8 @@ fig_rc = {
 }
 sns.set_theme(style="darkgrid", rc=fig_rc)
 
-
-# ==========================================
-# 3. TABS
-# ==========================================
 tab1, tab2 = st.tabs(["  📊  Mission Data Intelligence  ", "  🚀  Flight Physics Simulator  "])
 
-
-# ==========================================
-# TAB 1 – MISSION INTELLIGENCE
-# ==========================================
 with tab1:
 
     # Sidebar
@@ -810,12 +792,10 @@ UPLINK ACTIVE &nbsp;·&nbsp; <strong style="color:#00d4ff;">{len(filtered_data)}
         fig4.update_layout(template=cyber_template)
         st.plotly_chart(fig4, use_container_width=True)
 
-    # Water-flow divider
     st.markdown("""
 <div class="water-flow-anim"><span></span><span></span><span></span></div>
 """, unsafe_allow_html=True)
 
-    # --- SECTION B: STATISTICAL DISTRIBUTIONS ---
     st.markdown('<div class="section-chip">02 / STATISTICAL DISTRIBUTIONS</div>', unsafe_allow_html=True)
     st.markdown("<h2>Core Statistical Analysis (Matplotlib & Seaborn)</h2>", unsafe_allow_html=True)
 
@@ -862,12 +842,10 @@ UPLINK ACTIVE &nbsp;·&nbsp; <strong style="color:#00d4ff;">{len(filtered_data)}
         st.pyplot(fig_s2)
         plt.close(fig_s2)
 
-    # Water-flow divider
     st.markdown("""
 <div class="water-flow-anim"><span></span><span></span><span></span></div>
 """, unsafe_allow_html=True)
 
-    # --- SECTION C: DEEP ORBITAL ANALYTICS ---
     st.markdown('<div class="section-chip">03 / DEEP ORBITAL ANALYTICS</div>', unsafe_allow_html=True)
     st.markdown("<h2>Multi-Dimensional Systems Analytics</h2>", unsafe_allow_html=True)
 
@@ -914,10 +892,6 @@ UPLINK ACTIVE &nbsp;·&nbsp; <strong style="color:#00d4ff;">{len(filtered_data)}
         fig_sun.update_layout(template=cyber_template, height=480, margin=dict(t=40, l=0, r=0, b=0))
         st.plotly_chart(fig_sun, use_container_width=True)
 
-
-# ==========================================
-# TAB 2 – FLIGHT PHYSICS SIMULATOR
-# ==========================================
 with tab2:
 
     st.markdown("""
@@ -943,7 +917,6 @@ for true-to-life orbital trajectory generation.
 <div class="water-flow-anim"><span></span><span></span><span></span></div>
 """, unsafe_allow_html=True)
 
-    # --- DATASET PROFILE MODE ---
     if mode == "Dataset Telemetry Profiles":
         mission_names    = data['Mission Name'].tolist()
         selected_mission = st.selectbox("Select Mission Telemetry Profile:", mission_names)
@@ -959,7 +932,6 @@ for true-to-life orbital trajectory generation.
         fuel_kg        = m_data['Fuel Consumption (tons)'] * 1000
         success_chance = m_data['Mission Success (%)']
 
-    # --- MANUAL OVERRIDE MODE ---
     else:
         st.markdown('<div class="section-chip">🔧 ENGINEERING CONFIGURATION</div>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
@@ -973,7 +945,6 @@ for true-to-life orbital trajectory generation.
         success_chance = col6.slider("System Reliability Prob. (%)",      10, 100,  90)
         vehicle        = "Custom Prototype"
 
-    # Pre-launch calculations
     total_initial_mass = init_mass + payload_kg + fuel_kg
     initial_twr        = thrust / (total_initial_mass * 9.81)
     burn_time_est      = 120
@@ -981,7 +952,6 @@ for true-to-life orbital trajectory generation.
     exhaust_velocity   = thrust / mass_flow_rate if mass_flow_rate > 0 else 0
     delta_v            = exhaust_velocity * np.log(total_initial_mass / (init_mass + payload_kg)) if exhaust_velocity > 0 else 0
 
-    # Metrics row
     st.markdown("""
 <div class="water-flow-anim"><span></span><span></span><span></span></div>
 """, unsafe_allow_html=True)
@@ -994,7 +964,6 @@ for true-to-life orbital trajectory generation.
     st.markdown("<br>", unsafe_allow_html=True)
     live_telemetry = st.empty()
 
-    # --- IGNITION BUTTON ---
     if st.button("🚀  INITIATE IGNITION SEQUENCE", use_container_width=True):
 
         dt         = 0.5
