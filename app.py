@@ -704,12 +704,12 @@ color_map_status = {"Nominal (Success)": "#00ffb3", "Anomaly (Failure)": "#ff3b6
 plt.style.use('dark_background')
 fig_rc = {
     'figure.facecolor': '#010c18',
-    'axes.facecolor':   'rgba(0,20,45,0.7)',
-    'axes.edgecolor':   'rgba(0,212,255,0.2)',
+    'axes.facecolor':   (0.0, 0.078, 0.176, 0.7),   # rgba(0,20,45,0.7)
+    'axes.edgecolor':   (0.0, 0.831, 1.0,   0.2),   # rgba(0,212,255,0.2)
     'text.color':       '#a8cfe0',
     'xtick.color':      '#00d4ff',
     'ytick.color':      '#00d4ff',
-    'grid.color':       'rgba(0,212,255,0.05)',
+    'grid.color':       (0.0, 0.831, 1.0,   0.05),  # rgba(0,212,255,0.05)
 }
 sns.set_theme(style="darkgrid", rc=fig_rc)
 
