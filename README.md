@@ -1,6 +1,4 @@
-# 🚀 Aerospace Data Insights - Space Mission Dashboard
-
-**Repository Name:** IDAI104(Student_ID)-YourName
+# 🚀 Aerospace Data Insights - Space Mission 
 
 ## 📌 Project Overview
 This project involves a Streamlit cloud web app designed for **Aerospace Data Insights**. It provides a hands-on experience visualizing space missions and simulating a rocket launch using differential equations and real-world math formulas. 
@@ -19,7 +17,8 @@ The dashboard enables users (like engineers and building managers) to explore va
 - **Rocket Physics Simulation Engine:** Uses Python loops to simulate differential equations adjusting thrust, gravity, atmospheric drag, and mass reduction over time, plotting live altitude.
 
 ## 🔗 Live Streamlit Web App
-[🚀 Click Here to view the Live Streamlit App!](#) *(Replace this placeholder with your Streamlit Cloud Link once deployed)*
+https://idai104-1000323--saurav-dds7mwphzyuhupyzghkbws.streamlit.app/
+
 
 ## ⚙️ How to Deploy & Run Locally
 
